@@ -1,0 +1,37 @@
+{
+  "id": "/gradlab/",
+  "name": "대학원생 키우기",
+  "short_name": "대학원생 키우기",
+  "description": "대학원생이 되어 연구실을 꾸리고 학생을 키워 논문을 내며 교수까지 승진하는 타이쿤 게임",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f4f6",
+  "theme_color": "#3182f6",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

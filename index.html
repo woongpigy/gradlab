@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="color-scheme" content="light">
+<title>대학원생 키우기</title>
+<style>
+  :root{--blue:#3182f6;--blue2:#e8f3ff;--bg:#f2f4f6;--card:#fff;--ink:#191f28;--sub:#6b7684;--line:#e5e8eb;--ok:#1aa36b;--warn:#f04452;--gold:#ffb331}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#dfe3e8;font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink)}
+  #app{max-width:430px;height:100dvh;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
+  header{background:var(--card);padding:calc(8px + max(env(safe-area-inset-top), var(--sat, 0px))) 12px 8px;border-bottom:1px solid var(--line)}
+  .who0{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+  .badge{background:var(--blue2);color:var(--blue);border-radius:999px;padding:2px 10px;font-size:13px}
+  .res{display:flex;gap:6px;margin-top:6px}
+  .res div{flex:1;background:var(--bg);border-radius:10px;padding:5px 8px}
+  .res b{display:block;font-size:16px}
+  .res small{color:var(--sub);font-size:11px}
+  main{flex:1;overflow-y:auto;padding:10px 10px 20px}
+  nav{display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:max(env(safe-area-inset-bottom), var(--sab, 0px))}
+  nav button{flex:1;border:0;background:none;padding:8px 0 10px;font-size:12px;color:var(--sub);position:relative}
+  nav button span{display:block;font-size:20px}
+  nav button.on{color:var(--blue);font-weight:700}
+  nav .dot{position:absolute;top:6px;right:22%;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+  .card{background:var(--card);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+  .card h3{margin:0 0 8px;font-size:15px}
+  .muted{color:var(--sub);font-size:13px}
+  .row{display:flex;align-items:center;gap:8px}
+  .item{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .item:first-of-type{border-top:0}
+  .ico{font-size:28px;width:40px;text-align:center}
+  .grow{flex:1;min-width:0}
+  .grow b{font-size:15px}
+  .btn{border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:14px;padding:10px 12px;min-width:76px;line-height:1.25}
+  .btn small{display:block;font-weight:500;font-size:11px;opacity:.9}
+  .btn:disabled{background:#d1d6db;color:#fff}
+  .btn.ghost{background:var(--blue2);color:var(--blue)}
+  .btn.ad{background:#fff3d6;color:#a86b00}
+  .btn.ghost:disabled,.btn.ad:disabled{background:#eef0f2;color:#b0b8c1}
+  .btn.full{width:100%;margin-top:8px}
+  .btn.sm{min-width:0;padding:6px 10px;font-size:13px}
+  .locked{opacity:.45}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:var(--blue);width:0}
+  .paper{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}
+  .paper.ready{border-color:var(--ok);background:#effaf5}
+  .paper.rev{border-color:var(--gold);background:#fff8e6}
+  .paper.urgent{border-color:var(--warn);background:#fff1f2}
+  .seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin:6px 0}
+  .seg button{flex:1;border:0;background:none;border-radius:8px;padding:7px;font-size:13px}
+  .seg button.on{background:#fff;font-weight:700;color:var(--blue)}
+  .tag{display:inline-block;font-size:11px;background:var(--bg);border-radius:6px;padding:1px 6px;margin-left:4px;color:var(--sub);font-weight:600}
+  .hint{background:#fff8e6;border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:10px}
+  .line{display:flex;align-items:center;justify-content:space-between;gap:4px;background:#fff;border-radius:14px;padding:8px 10px;margin-bottom:8px;font-size:13px}
+  .line button{border:0;background:var(--bg);border-radius:10px;padding:6px 8px;font-size:13px}
+  .line .warnb{background:#fff1f2;color:var(--warn);font-weight:700;animation:pulse 1.2s infinite}
+  @keyframes pulse{50%{opacity:.6}}
+  /* ---------- 연구실 방 (그래픽) ---------- */
+  .roomWrap{border-radius:18px;overflow:hidden;margin-bottom:8px;box-shadow:0 2px 0 #d9ccb2}
+  .wall{height:30px;background:linear-gradient(#d6dee8,#c3ccd8);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:5px 8px 0;position:relative}
+  .wall i{display:block;background:linear-gradient(160deg,#f2f9ff 30%,#c4e3ff);border:3px solid #fff;border-bottom:0;border-radius:8px 8px 0 0;position:relative}
+  .wall i::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:#fff}
+  #room{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px 8px 8px;
+    background:conic-gradient(#f5eddd 25%,#eee3cc 0 50%,#f5eddd 0 75%,#eee3cc 0) 0 0/46px 46px}
+  .cell{position:relative;aspect-ratio:1/1.12;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:3px 2px 4px;font-size:11px;user-select:none;cursor:pointer}
+  .cell.win{background:linear-gradient(rgba(196,227,255,.65),rgba(196,227,255,0) 55%)}
+  .cell.place{outline:2px dashed rgba(0,0,0,.13);outline-offset:-3px}
+  .cell.rng{background:rgba(49,130,246,.13)}
+  .cell.sel{outline:3px solid var(--blue);outline-offset:-3px;background:rgba(49,130,246,.16)}
+  .cell.sp{box-shadow:inset 0 0 0 2px rgba(255,179,49,.85),0 0 12px rgba(255,179,49,.55)}
+  .spb{position:absolute;top:2px;left:3px;font-size:12px;z-index:2}
+  .who{font-size:30px;line-height:1;margin-bottom:-5px;z-index:1;position:relative}
+  .who.work{animation:type .45s infinite}
+  .who.wr{animation:type 1.2s infinite}
+  .who.zz{animation:nod 2.2s infinite;filter:grayscale(.65)}
+  @keyframes type{50%{transform:translateY(-2px) rotate(-3deg)}}
+  @keyframes nod{0%,100%{transform:rotate(0)}50%{transform:rotate(20deg) translateY(4px)}}
+  .tbl{width:88%;height:22px;background:linear-gradient(#c49565,#a5733f);border-radius:6px 6px 3px 3px;box-shadow:0 3px 0 #7d5330;display:flex;justify-content:center}
+  .tbl span{font-size:15px;margin-top:-11px}
+  .cap{font-weight:700;font-size:11px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .rt2{font-size:10px;color:var(--blue);font-weight:700;white-space:nowrap}
+  .rolet{position:absolute;top:3px;right:3px;font-size:10px;background:rgba(255,255,255,.9);border-radius:6px;padding:0 3px;z-index:2}
+  .obj{font-size:36px;line-height:1;position:relative;z-index:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.13))}
+  .cell.it::after{content:'';position:absolute;bottom:20px;width:52%;height:7px;border-radius:50%;background:rgba(0,0,0,.1)}
+  .zzz{position:absolute;top:22px;right:4px;font-size:16px;z-index:2;animation:bob 1.4s infinite}
+  .bub{position:absolute;top:-6px;right:-2px;font-size:26px;border:0;background:none;animation:bob 1s infinite;z-index:4;padding:0;cursor:pointer}
+  @keyframes bob{50%{transform:translateY(-5px)}}
+  .pt{position:absolute;width:7px;height:7px;border-radius:2px;background:#3182f6;box-shadow:0 0 4px #3182f6;transition:transform .8s ease-in,opacity .8s;z-index:3;pointer-events:none}
+  .placebar{background:#fff;border-radius:14px;padding:10px;margin-bottom:8px;font-size:13px;border:2px solid var(--blue)}
+  .tray{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .tray button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:4px 8px;font-size:20px}
+  .tray button.on{border-color:var(--blue);background:var(--blue2)}
+  #tapBtn{width:100%;border:0;border-radius:16px;background:var(--blue);color:#fff;font-size:20px;font-weight:800;padding:16px 0;box-shadow:0 4px 0 #1b64da;touch-action:manipulation;user-select:none}
+  #tapBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #1b64da}
+  #tapBtn small{display:block;font-size:12px;font-weight:600;opacity:.85;margin-top:2px}
+  #tapWrap{position:relative;margin-bottom:10px}
+  .float{position:absolute;left:50%;top:6px;pointer-events:none;font-weight:800;color:var(--blue);animation:up .8s ease-out forwards;font-size:17px;z-index:3}
+  @keyframes up{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-60px)}}
+  .spots{background:#fff;border-radius:14px;padding:8px 10px;margin-bottom:10px;font-size:13px;display:flex;align-items:center;gap:6px}
+  .todo .item{padding:8px 0}
+  .stat{display:inline-block;min-width:76px;font-size:12px}
+  .stars{color:var(--gold);letter-spacing:-1px}
+  /* 리뷰 점수 */
+  .scores{display:flex;gap:8px;justify-content:center;margin:8px 0}
+  .sc{width:80px;background:var(--bg);border-radius:12px;padding:6px 0;opacity:0;animation:pop .35s forwards}
+  .sc small{display:block;font-size:11px;color:var(--sub)}
+  .sc b{font-size:28px}
+  .sc.bad{background:#fff1f2;color:var(--warn)}
+  @keyframes pop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+  /* 시트 */
+  #modal{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:20}
+  #modal.hidden{display:none}
+  .sheet{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:18px 16px calc(16px + max(env(safe-area-inset-bottom), var(--sab, 0px)));text-align:center;max-height:88%;overflow-y:auto}
+  .sheet .big{font-size:52px}
+  .sheet h2{margin:6px 0;font-size:19px}
+  .sheet p{color:#4e5968;font-size:15px;line-height:1.5;margin:6px 0 10px;word-break:keep-all}
+  .sheet input{width:100%;font-size:17px;padding:12px;border:1px solid var(--line);border-radius:12px;text-align:center}
+  .sheet .btn{width:100%;margin-top:8px;padding:13px;font-size:16px}
+  .sheet .row .btn{width:auto;flex:1}
+  .sheet .item .btn{width:auto;margin-top:0;padding:8px 12px;font-size:14px;flex:none}
+  .sheet .item{text-align:left}
+  .sheet .left{text-align:left}
+  .reward{background:var(--bg);border-radius:12px;padding:10px;margin:8px 0;font-size:15px;line-height:1.7}
+  #toast{position:absolute;left:50%;top:calc(6px + max(env(safe-area-inset-top), var(--sat, 0px)));transform:translateX(-50%);background:rgba(25,31,40,.9);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+  #toast.on{opacity:1}
+  #exitBox{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:50}
+  #exitBox.hidden{display:none}
+  #modal.title{background:var(--bg);align-items:stretch}
+  #modal.title .sheet{border-radius:0;max-height:100%;height:100%;display:flex;flex-direction:column;justify-content:center;padding-top:calc(18px + max(env(safe-area-inset-top), var(--sat, 0px)))}
+  .proto{font-size:11px;color:var(--sub);text-align:center;margin-top:6px}
+  .pa{display:flex;align-items:center;gap:6px;font-size:11px;margin-top:3px}
+  .pa span{width:46px}.pa .bar{flex:1;margin:0;height:7px}.pa small{width:78px;text-align:right;color:var(--sub)}
+  .pa.N .bar i{background:#ff9f43}.pa.W .bar i{background:#8b5cf6}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+  .chips button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:13px}
+  .chips button.on{border-color:var(--blue);background:var(--blue2);color:var(--blue);font-weight:700}
+  .lbl{font-size:12px;color:var(--sub);margin-top:6px}
+  .pb{position:absolute;font-size:11px;font-weight:800;pointer-events:none;z-index:5;white-space:nowrap;animation:up2 1.1s ease-out forwards;text-shadow:0 1px 0 #fff,0 -1px 0 #fff,1px 0 0 #fff,-1px 0 0 #fff}
+  @keyframes up2{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-34px)}}
+  .tro{position:absolute;right:10px;bottom:2px;font-size:15px;z-index:2;letter-spacing:-2px}
+  .total{font-size:15px;margin:2px 0 6px}
+  .cm{padding:6px 0;border-top:1px dashed var(--line);font-size:14px}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon_192.png">
+<link rel="apple-touch-icon" href="icon_192.png">
+<meta name="theme-color" content="#3182f6">
+<meta name="description" content="대학원생이 되어 연구실을 꾸리고 학생을 키워 논문을 내며 교수까지 승진하는 타이쿤 게임">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="who0"><span id="hFace">🙂</span><span id="hName">이름</span><span class="badge" id="hStage">학부연구생</span></div>
+    <div class="res">
+      <div><small>📊 데이터</small><b id="hD">0</b><small id="hDr">+0/초</small></div>
+      <div><small>💰 연구비</small><b id="hW">0</b><small id="hWr">+0/초</small></div>
+      <div><small>📈 인용</small><b id="hC">0</b><small id="hCr">+0/시간</small></div>
+    </div>
+  </header>
+  <main id="view"></main>
+  <nav id="tabs">
+    <button data-tab="lab" class="on"><span>🧪</span>연구실</button>
+    <button data-tab="people"><span>🧑‍🎓</span>사람<i class="dot" id="dotPeople" hidden></i></button>
+    <button data-tab="work"><span>📄</span>성과<i class="dot" id="dotWork" hidden></i></button>
+    <button data-tab="fac"><span>🏗️</span>시설</button>
+    <button data-tab="more"><span>⋯</span>더보기</button>
+  </nav>
+  <div id="modal" class="hidden"><div class="sheet" id="sheet"></div></div>
+  <div id="exitBox" class="hidden"><div class="sheet"><div class="big">🚪</div><h2>오늘은 여기까지 할까요?</h2><p>진행은 자동으로 저장돼요.<br>자리를 비운 동안에도 연구실은 돌아가요.</p><button class="btn" data-act="exitYes">종료하기</button><button class="btn ghost" data-act="exitNo">계속하기</button></div></div>
+  <div id="toast"></div>
+</div>
+<script>
+'use strict';
+/* =====================================================================
+   대학원생 키우기 v1.0 (출시판 소스: 플랫폼 어댑터 window.PLATFORM)
+   연구실 격자(책상·물건 배치, 붙여 놓기 효과, 스팟) → 서버 랙(처리) → 논문·과제
+   - 수치: BAL / 분야별 글·이모지: THEME(테마팩)
+   ===================================================================== */
+
+// ---------------------------------------------------------------- 밸런스
+const BAL = {
+  equip: {base: 0.5, cost0: 10, growth: 1.13, tier: 25, tierMult: 3, maxLv: [40, 80, 120, 170, 220, 300]},
+  tapBase: 1, tapPct: 0.05,
+  server: {cap0: 15, capGrowth: 1.45, cost0: 60, costGrowth: 1.7, rackBonus: 0.15},
+  grid: {w: 4, rows: [2, 4, 5, 6, 7, 8]},
+  desks: {max: [1, 3, 5, 7, 9, 12], cost0: 30, growth: 5},
+  hire: {cost0: 20, growth: 1.8, gradeMult: [1, 4, 15], gradeStage: [1, 2, 3], refresh: 600},
+  student: {codeMult: 0.15, lvMult: 0.1, expPerMin: 1, statCap: 20, gradLv: 20, gradStage: 3, trainExp: 20, trainCost0: 40, trainGrowth: 1.6, gradBonus: 0.05},
+  venues: [
+    {cost: 60,   write: 20,   review: 120,   revs: 0, reward: 30,    cit: 0.5, unlock: 0, q: 0},
+    {cost: 5e4,  write: 120,  review: 1800,  revs: 0, reward: 600,   cit: 2,   unlock: 1, q: 0},
+    {cost: 8e7,  write: 300,  review: 7200,  revs: 1, reward: 8000,  cit: 8,   unlock: 2, q: 12},
+    {cost: 3e10, write: 600,  review: 21600, revs: 1, reward: 1.2e5, cit: 25,  unlock: 3, q: 20},
+    {cost: 8e12, write: 1200, review: 43200, revs: 2, reward: 2e6,   cit: 100, unlock: 4, q: 30},
+  ],
+  paperGrowth: 1.6, revReview: 1 / 3, wPerCit: 0.02,
+  // 논문 (게임발전국식): 참신성 N · 실험 E · 글 W 점수 + 오류
+  paper: {
+    rateE: 0.5, rateW: 0.5, rateN: 0.25, bugRate: 0.05, debugRate: 0.06,
+    compatMult: [0.8, 1, 1.2, 1.5], topicLvMult: 0.1,
+    dirs: {normal: {cost: 1, time: 1, pts: 1, bug: 1, rp: 1}, careful: {cost: 1.3, time: 1.3, pts: 1.35, bug: 0.8, rp: 1},
+           fast: {cost: 1.2, time: 0.6, pts: 0.75, bug: 1.4, rp: 1}, research: {cost: 1.5, time: 1, pts: 0.9, bug: 1, rp: 2.5}},
+    req: [[36, 36, 30], [580, 250, 190], [4700, 2500, 1280], [36000, 9700, 7500], [145000, 27000, 30000]],   // [실험, 글, 참신성]
+    repeatPen: 0.15,   // 같은 조합을 또 쓰면 참신성 −15%씩 (최대 −50%)
+    th: {accept: 26, minor: 22, major: 16, hof: 32}, maxRev: 2,
+    revTime: {minor: 0.5, major: 1}, revCostMinor: 0.2, revCostMajor: 0.35, revNeedMinor: 0.25, revNeedMajor: 0.45,
+    resubCost: 0.2, resubBoost: 0.15, sequelCarry: 0.3, revRate: 0.55,
+    rpPerBug: 0.12, rpReview: 0.6, rpPublish: [1, 1, 2, 3, 4], rpOrder: 0.3, rpAward: 8, rpGiveup: 2,
+    unlockT: [0, 0, 0, 15, 30, 50, 75, 100], unlockM: [0, 0, 0, 10, 25, 40, 60],
+    awardEvery: 3 * 86400, merchantGap: [900, 1500],
+  },
+  stages: [
+    {mult: 1, slots: 1, req: null}, {mult: 1.5, slots: 2, req: [0, 1]},
+    {mult: 1.5, slots: 2, req: [1, 2]}, {mult: 1.5, slots: 2, req: [2, 3]},
+    {mult: 1.5, slots: 3, req: [3, 3]}, {mult: 1.5, slots: 3, req: [4, 2]},
+  ],
+  orders: {gap: [150, 300], max: 3, needSecs: [90, 420], patience: [1200, 3600], urgentPatience: [480, 720], urgentChance: 0.2, urgentMult: 2.5,
+    reward: [0, 120, 1000, 8000, 6e4, 5e5], gradBonus: 0.03},
+  // 연구실에 놓는 물건: cost[가진 개수] = 다음 하나 값(연구비), 배열 길이 = 최대 개수
+  items: {
+    rack:    {cost: [0, 400, 3000, 25000, 2e5, 2e6], stage: 1},
+    plant:   {cost: [60, 120, 250, 500, 1000, 2000], stage: 1},
+    coffee:  {cost: [300, 5000], stage: 1},
+    board:   {cost: [1500, 2e4], stage: 1},
+    shelf:   {cost: [3000, 3e4, 3e5], stage: 2},
+    sofa:    {cost: [8000, 8e4], stage: 2},
+    printer: {cost: [1.5e4], stage: 2},
+  },
+  // 놓지 않는 업그레이드
+  upgrades: [
+    {id: 'monitor', cost: 20, eff: 'tap', val: 2, stage: 0}, {id: 'keyboard', cost: 250, eff: 'tap', val: 2, stage: 1},
+    {id: 'chair', cost: 5000, eff: 'cap', val: 4 * 3600, stage: 1}, {id: 'standing', cost: 1.2e5, eff: 'gen', val: 1.5, stage: 2},
+    {id: 'office', cost: 1.5e6, eff: 'gen', val: 2, stage: 3},
+  ],
+  fx: {window: 2, plant: 1, rackProd: 0.1, rackMental: -1, study: 0.1, shelfWrite: 2, nightSpot: 0.2, writeSpotRev: 0.7, r2Quality: 5, brainIdea: 2, snackIdeaGap: 0.67, zenMental: 3},
+  repeat: {base: 1e6, growth: 3, eff: 1.25},
+  offCap: 8 * 3600, offEff: 0.5, sofaOffEff: 0.25,
+  doze: {gap: [70, 160], auto: 120, sofaAuto: 60}, idea: {gap: [20, 45], life: 15, secs: 30},
+  adLimits: {offline: 5, night: 6, fast: 5, event: 5, cands: 5}, nightSecs: 1800,
+  eventGap: [200, 320],
+};
+// 스팟: 서로 2칸 안에 있는 물건 3개 → 주변 8칸 강화
+const SPOTS = [
+  {id: 'night', need: ['coffee', 'sofa', 'rack']},
+  {id: 'brain', need: ['board', 'coffee', 'plant']},
+  {id: 'write', need: ['shelf', 'printer', 'wdesk']},
+  {id: 'heal', need: ['plant', 'sofa', 'window']},
+  {id: 'r2', need: ['printer', 'rack', 'shelf']},
+  {id: 'snack', need: ['printer', 'coffee', 'sofa'], hidden: true},
+  {id: 'zen', need: ['plant', 'plant', 'plant'], hidden: true},
+];
+
+// ---------------------------------------------------------------- 테마팩: 드라이랩
+const THEME = {
+  id: 'drylab', label: '드라이랩', tap: '코드 실행', tapIcon: '⌨️',
+  stages: [
+    {name: '학부연구생', face: '🙂'}, {name: '석사과정', face: '🤓'}, {name: '박사과정', face: '😵‍💫'},
+    {name: '박사 졸업', face: '🎓'}, {name: '포닥', face: '🧑‍💻'}, {name: '조교수', face: '🧑‍🏫'},
+  ],
+  promo: ['',
+    '석사과정 진학! 교수님이 신입생을 받기 시작했다. 서버 랙도 한 대 들어왔다.',
+    '박사과정 진학! 명절마다 "언제 졸업하니?"를 듣기 시작했다.',
+    '박사 학위 취득! 학위복을 입고 사진을 300장 찍었다. 이제 후배들을 졸업시킬 차례.',
+    '포닥 시작! 이제 진짜 어른 연구자… 계약은 1년.',
+    '조교수 임용! 이제 내가 "교수님"이다.'],
+  unlockNote: ['', '신입생 모집 · 서버 랙 · 과제 의뢰 · 물건 배치', '역할 배정(집필) · 소파·책장·프린터 · 석사 지원자', '제자 졸업 · 박사 지원자', '탑저널', ''],
+  equip: [['중고 노트북', '💻'], ['연구실 데스크톱', '🖥️'], ['게이밍 GPU', '🎮'], ['GPU 워크스테이션', '💽'], ['GPU 서버', '🗄️'],
+          ['학교 클러스터', '🏫'], ['클라우드 크레딧', '☁️'], ['슈퍼컴퓨터 할당', '🚀'], ['양자컴퓨터(?)', '🌀']],
+  server: ['서버', '🗄️'],
+  venues: ['워크숍', '국내 학회', '국제 학회', '저널', '탑저널'],
+  grades: ['학부 인턴', '석사 신입', '박사 신입'],
+  roles: {exp: ['실험', '데이터와 논문 ‘실험’ 점수를 만들어요'], write: ['집필', '논문 ‘글’ 점수를 만들어요 (데이터는 안 만듦)']},
+  traits: [
+    {id: 'night', name: '새벽형', ico: '🌙', desc: '밤 10시~새벽 4시엔 생산 ×2, 낮엔 ×0.8'},
+    {id: 'coffee', name: '커피 중독', ico: '☕', desc: '커피머신 옆이면 ×1.5, 연구실에 커피머신이 없으면 ×0.8'},
+    {id: 'gear', name: '장비 덕후', ico: '🛠️', desc: '장비 효과 ×1.3'},
+    {id: 'home', name: '칼퇴형', ico: '🏃', desc: '절대 졸지 않음, 생산 ×0.9'},
+    {id: 'writer', name: '문장가', ico: '✍️', desc: '글쓰기 +3'},
+    {id: 'deadline', name: '마감형', ico: '⏰', desc: '급한 과제가 있을 때 ×3'},
+  ],
+  items: {
+    rack: ['서버 랙', '🗄️', '처리량 +15%(두 대째부터). 옆 책상 생산 +10%, 대신 시끄러워 멘탈 −1'],
+    plant: ['화분', '🪴', '옆 책상 멘탈 +1 (여러 개면 합산)'],
+    coffee: ['커피머신', '☕', '옆 책상 졸음 절반, 커피 중독 학생 ×1.5'],
+    board: ['화이트보드', '📝', '옆 책상에서 💡가 더 자주 떠요'],
+    shelf: ['책장', '📚', '옆 집필 학생 글쓰기 +2'],
+    sofa: ['소파', '🛋️', '옆 학생은 졸아도 1분 만에 깸 · 연구실에 있으면 자리 비움 효율 75%'],
+    printer: ['프린터', '🖨️', '스팟 재료 (집필·리뷰어 2 스팟)'],
+  },
+  spots: {
+    night: ['🌃', '밤샘 스팟', '커피머신 + 소파 + 서버 랙', '주변 책상 생산 +20%'],
+    brain: ['💡', '브레인스토밍 스팟', '화이트보드 + 커피머신 + 화분', '💡 아이디어 보상 ×2'],
+    write: ['📚', '집필 스팟', '책장 + 프린터 + 집필 학생 책상', '리비전 비용 −30%'],
+    heal: ['🌿', '힐링 스팟', '화분 + 소파 + 창가 자리(맨 윗줄)', '주변 학생이 졸지 않음'],
+    r2: ['😈', '리뷰어 2 스팟', '프린터 + 서버 랙 + 책장', '글 품질 +5 (리뷰어 2가 조금 순해짐)'],
+    snack: ['🍜', '야식 스팟', '프린터 + 커피머신 + 소파', '💡가 더 자주 떠요', '프린터 앞에서 배고픈 일이…'],
+    zen: ['🧘', '명상 스팟', '화분 + 화분 + 화분', '주변 멘탈 +3', '초록이 셋'],
+  },
+  upgrades: {
+    monitor: ['듀얼 모니터', '🖥️', '탭 ×2'], keyboard: ['기계식 키보드', '⌨️', '탭 ×2'], chair: ['좋은 의자', '🪑', '자리 비움 보상 최대 12시간'],
+    standing: ['스탠딩 데스크', '🧍', '연구실 생산 ×1.5'], office: ['교수실 확장', '🚪', '연구실 생산 ×2'],
+  },
+  repeat: ['연구 환경 개선', '🔧', '연구실 생산 ×1.25 (살 때마다)'],
+  surnames: ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임', '한', '오', '서', '신', '권'],
+  given: ['도윤', '하준', '서연', '지우', '민준', '서윤', '예준', '하은', '시우', '지호', '수아', '유준', '지안', '은우', '채원', '건우', '다은', '현우', '소율', '준서'],
+  faces: ['🧑‍🎓', '👩‍🎓', '👨‍🎓', '🧑‍💻', '👩‍💻', '👨‍💻', '🧑‍🔬', '👩‍🔬', '👨‍🔬', '🧑', '👩', '👨'],
+  jobs: ['대기업 AI팀 취업!', '스타트업 창업!', '해외 포닥으로 떠났다', '연구소 입사!', '교수 임용!? (부럽다)', '치킨집… 아니고 데이터 회사 창업!'],
+  orders: [
+    ['○○전자', 'AI로 불량품 찾기'], ['□□시청', '민원 자동 분류'], ['△△은행', '고객 이탈 예측'], ['××병원', '진료 대기시간 예측'],
+    ['◇◇통신', '상담 챗봇 만들기'], ['동네 빵집', '내일 빵 판매량 예측'], ['교수님 지인 회사', '엑셀 매크로 좀…'], ['국가 과제', '중간보고 데이터 제출'],
+    ['☆☆자동차', '주차장 빈자리 찾기'], ['◎◎방송국', '시청률 예측'], ['회장님 댁', '강아지 사진 분류 AI'], ['고등학교 동창회', '단톡방 300개 요약해 줘'],
+    ['어머니', '"그거 AI로 하면 금방 아니니?"'], ['치킨집 사장님', '닭다리 몇 개 팔릴지 예측'], ['○○구청', '보도블록 공사 일정 최적화'],
+  ],
+  topics: ['이미지 인식', '자연어 처리', '추천 시스템', '시계열 예측', '강화학습', '생성형 AI', '그래프 학습', '의료 AI'],
+  methods: ['새 모델', '경량화', '응용 사례', '새 데이터셋', '벤치마크', '재현 연구', '서베이'],
+  compatBest: ['0-1', '1-3', '2-2', '3-4', '4-5', '5-0', '6-6', '7-3'],
+  compatBad: ['0-6', '5-5', '7-1', '4-2', '3-3'],
+  catches: ['정말 필요한가?', '다시 생각해 보기', '거의 공짜로', '우리가 놓친 것들', '리뷰어 2를 위한 변명', '교수님이 시켜서', '밤샘의 기록', '일단 돌아간다'],
+  comments: [
+    ['새로움이 잘 안 보입니다.', '기존 연구와 뭐가 다른가요?', '동기(motivation)를 더 설득력 있게 써 주세요.'],
+    ['베이스라인을 3개 더 비교해 주세요.', 'Ablation study가 필요합니다.', '데이터셋을 하나 더 추가해 주세요.', '제 논문을 인용하지 않으셨네요. (참고문헌 7편 첨부)'],
+    ['영어 교정을 받으시기 바랍니다.', '그림 3의 글씨가 너무 작습니다.', '2장이 너무 깁니다.', '표 2의 숫자가 본문과 다릅니다.'],
+    ['전반적으로 다듬으면 좋겠습니다.', '기여점을 한 문단으로 정리해 주세요.', '리뷰어들의 의견을 모두 반영해 주세요.'],
+  ],
+  shop: {
+    energy: ['에너지 드링크', '⚡', '30분 동안 아무도 안 졺 + 생산 ×1.5', 1.5],
+    proof: ['영어 교정권', '📝', '진행 중인 논문 하나 글 점수 +30%', 1],
+    snack: ['연구실 간식', '🍰', '모든 학생 경험치 +30', 2],
+    fee: ['학회 등록비 지원', '🎫', '다음 논문 데이터 비용 −40%', 1.5],
+    note: ['연구 노트', '📓', '연구 포인트 +10', 1],
+  },
+  merchant: ['떠돌이 상인', '🧳', '“박사 수료 7년 차, 지금은 장사합니다. 필요한 거 있으세요?”'],
+  reviewer2: ['베이스라인을 3개 더 비교해 주세요.', '제안 방법의 새로움이 부족해 보입니다.', '영어 교정을 받으시기 바랍니다.',
+    '데이터셋을 하나 더 추가해 주세요.', '제 논문을 인용하지 않으셨네요. (참고문헌 7편 첨부)', '그림 3의 글씨가 너무 작습니다.', 'Ablation study가 필요합니다.'],
+  accept: ['게재 승인! 메일 제목만 다섯 번 읽었다.', '게재 확정! 교수님이 "수고했어" 한마디 하셨다.', '억셉! 연구실 단톡방에 축하 이모티콘이 쏟아졌다.', '게재! 이력서에 한 줄이 늘었다.'],
+  events: [
+    {id: 'prof', icon: '📞', title: '교수님 호출', text: '“이거 내일 미팅 전까지 되지?”',
+     choices: [{label: '밤새기', eff: {D: 600}, msg: '밤을 새웠다. 데이터는 나왔다.'}, {label: '솔직하게 말하기', eff: {W: 600}, msg: '교수님이 의외로 이해해 주셨다. 간식비를 받았다.'}]},
+    {id: 'server', icon: '🔥', title: '서버 다운', text: '“GPU 서버가 응답하지 않습니다.”', mash: 20, mashLabel: '재부팅', win: {D: 300}, winMsg: '재부팅 성공! 밀린 작업이 한꺼번에 끝났다.',
+     lose: {buff: ['gen', 0.5, 60]}, loseLabel: '내일 하자', loseMsg: '60초 동안 생산이 절반으로 줄었다.'},
+    {id: 'git', icon: '🔀', title: 'Git 충돌', text: '“누가 main에 바로 push했어?”', mash: 10, mashLabel: '충돌 해결', win: {D: 180}, winMsg: '충돌 해결! 범인은 나였다.', lose: null, loseLabel: '못 본 척', loseMsg: '못 본 척했다.'},
+    {id: 'why', icon: '🤔', title: '왜 되지?', text: '“코드가 돌아간다. 아무도 건드리지 마.”', choices: [{label: '절대 안 건드림', eff: {D: 300}, msg: '돌아가는 동안 데이터가 쏟아졌다.'}]},
+    {id: 'deadline', icon: '⏰', title: '마감 D-1', text: '“학회 마감 23:59 (AoE)”', choices: [{label: '달린다', eff: {buff: ['tap', 5, 60]}, msg: '60초 동안 탭 ×5!'}]},
+    {id: 'parents', icon: '☎️', title: '부모님 전화', text: '“밥은 먹고 다니니?”',
+     choices: [{label: '먹었어요 (거짓말)', eff: {buff: ['tap', 3, 120]}, msg: '죄책감을 연료로 2분 동안 탭 ×3.'}, {label: '지금 먹으러 가요', eff: {buff: ['gen', 1.5, 300]}, msg: '든든하다. 5분 동안 생산 ×1.5.'}]},
+    {id: 'dinner', icon: '🍖', title: '연구실 회식', text: '“오늘은 교수님 카드입니다.”', minStudents: 1, choices: [{label: '감사합니다!', eff: {buff: ['gen', 2, 600], wakeAll: 1}, msg: '사기 충전! 모두 깼다. 10분 동안 생산 ×2.'}]},
+    {id: 'allnight', icon: '🌃', title: '후배의 밤샘', text: '“선배, 제가 밤새 돌려 놨어요!”', minStudents: 1, choices: [{label: '고마워!', eff: {D: 900}, msg: '후배가 만든 데이터를 받았다. 내일 커피 사 줘야지.'}]},
+    {id: 'alumni', icon: '🎁', title: '졸업한 선배 방문', text: '“내 코드 물려줄게. 주석은 없어.”', choices: [{label: '감사히 받기', eff: {freeLv: 5}, msg: '내 책상 장비가 5레벨 올랐다.'}]},
+    {id: 'coffee', icon: '☕', title: '커피 수혈', text: '“오늘 세 잔째.”', choices: [{label: '한 잔 더', eff: {buff: ['tap', 3, 120]}, msg: '2분 동안 탭 ×3.'}]},
+  ],
+};
+
+// ---------------------------------------------------------------- 상태
+const KEY = 'gradsim_' + THEME.id + '_v6';
+// 플랫폼 어댑터: 토스 빌드는 platform.js가 window.PLATFORM을 먼저 만들어 둠. 없으면 웹(로컬 저장, 광고 없음).
+const PF = Object.assign({
+  name: 'web',
+  init: async () => ({userKey: ''}),
+  load: async k => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  save: async () => {}, remove: async () => {},
+  adReady: () => false, showReward: (onReward, onClose) => onClose(),
+  onBack: null, close: null, insets: null,
+}, window.PLATFORM || {});
+let SKEY = KEY, lastBridgeSave = 0, lastSavedStr = '', bridgeOK = true;
+const $ = id => document.getElementById(id);
+function newState() {
+  return {v: 4, name: '', stage: 0, D: 0, W: 0, cit: 0, citRate: 0, t: 0, evT: 0, lastReal: Date.now(),
+    desks: [{lv: 1, sid: 'me', cell: 1}], items: [], lver: 0, found: {}, usedPlace: 0,
+    students: [], sidN: 0, hired: 0, grads: 0, cands: [], candAt: 0,
+    server: 1, upg: {}, rep: 0, papers: [], published: [0, 0, 0, 0, 0], vcount: [0, 0, 0, 0, 0], pid: 0,
+    orders: [], oid: 0, nextOrder: 60, delivered: 0, idea: null, nextIdea: 20, nextDoze: 90,
+    buffs: [], taps: 0, sessions: 0, nextEvent: 240, ads: {day: '', offline: 0, night: 0, fast: 0, event: 0, cands: 0},
+    sound: false, speed: 1, cleared: false, playSecs: 0,
+    rp: 0, combos: {}, comboUse: {}, topicExp: [], unlockT: [0, 1, 2], unlockM: [0, 1, 2], hof: [], trophies: [], weekPubs: [], nextAward: 3 * 86400,
+    inv: {}, feeOn: 0, noDozeUntil: 0, nextMerchant: 1200, plan: {v: 0, t: 0, m: 1, dir: 'normal', seq: -1},
+    couples: [], dayKey: '', streak: 0, seasonDone: {}, deadlineUntil: 0, evCount: 0};
+}
+let S = newState();
+function save(force) {
+  S.lastReal = Date.now(); const str = JSON.stringify(S);
+  try { localStorage.setItem(SKEY, str); } catch (e) {}
+  // 토스 저장소(앱 브릿지)는 바뀌었을 때만, 최소 10초 간격(종료·백그라운드 땐 바로)
+  if (PF.name !== 'web' && bridgeOK && str !== lastSavedStr && (force || Date.now() - lastBridgeSave > 10000)) { lastBridgeSave = Date.now(); lastSavedStr = str; PF.save(SKEY, str).catch(() => {}); }
+}
+function parseSave(r) { try { if (r) return Object.assign(newState(), JSON.parse(r)); } catch (e) {} return null; }
+
+// ---------------------------------------------------------------- 유틸
+const sum = a => a.reduce((x, y) => x + y, 0);
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const rr = (a, b) => a + Math.random() * (b - a);
+const ri = (a, b) => Math.floor(rr(a, b + 1));
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const UNITS = ['', '만', '억', '조', '경', '해', '자', '양', '구', '간', '정', '재', '극'];
+function fmt(n) {
+  if (!isFinite(n)) return '∞';
+  if (n < 0) return '-' + fmt(-n);
+  if (n < 10) return String(Math.floor(n * 10) / 10);
+  if (n < 1e4) return Math.floor(n).toLocaleString('ko-KR');
+  const i = Math.min(Math.floor(Math.log10(n) / 4), UNITS.length - 1), v = n / 1e4 ** i;
+  return (v < 10 ? String(Math.floor(v * 100) / 100) : v < 100 ? String(Math.floor(v * 10) / 10) : Math.floor(v).toLocaleString('ko-KR')) + UNITS[i];
+}
+function fmtT(sec) { sec = Math.max(0, Math.ceil(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h ? `${h}시간 ${m}분` : m ? `${m}분 ${s}초` : `${s}초`; }
+function round2(n) { if (n < 100) return Math.ceil(n); const p = 10 ** (Math.floor(Math.log10(n)) - 1); return Math.ceil(n / p) * p; }
+const stars = n => { const k = Math.min(5, Math.ceil(n / 4)); return '★'.repeat(k) + '☆'.repeat(5 - k); };
+
+// ---------------------------------------------------------------- 배치(격자)
+const GW = BAL.grid.w;
+const rows = () => BAL.grid.rows[S.stage];
+const cellsN = () => GW * rows();
+const rc = c => [Math.floor(c / GW), c % GW];
+const dist = (a, b) => { const [r1, c1] = rc(a), [r2, c2] = rc(b); return Math.max(Math.abs(r1 - r2), Math.abs(c1 - c2)); };
+function bump() { S.lver = (S.lver || 0) + 1; }
+const stu = sid => S.students.find(s => s.id === sid);
+const deskStu = d => (d.sid && d.sid !== 'me') ? stu(d.sid) : null;
+function objects() {
+  const o = [];
+  S.desks.forEach((d, i) => { if (d.cell >= 0) o.push({key: 'd' + i, kind: 'desk', i, cell: d.cell, t: 'desk'}); });
+  S.items.forEach((it, i) => { if (it.cell >= 0) o.push({key: 'i' + i, kind: 'item', i, cell: it.cell, t: it.t}); });
+  return o;
+}
+const objRef = key => key[0] === 'd' ? S.desks[+key.slice(1)] : S.items[+key.slice(1)];
+let LC = {ver: -1};
+function layout() {
+  if (LC.ver === S.lver) return LC;
+  const objs = objects(), map = new Array(cellsN()).fill(null);
+  for (const o of objs) if (o.cell < map.length) map[o.cell] = o;
+  const isType = (o, need) => {
+    if (need === 'wdesk') { if (o.kind !== 'desk') return false; const s = deskStu(S.desks[o.i]); return !!s && s.role === 'write'; }
+    if (need === 'window') return rc(o.cell)[0] === 0;
+    return o.kind === 'item' && o.t === need;
+  };
+  const spots = {};
+  for (const sp of SPOTS) {
+    const L = sp.need.map(n => objs.filter(o => isType(o, n)));
+    if (L.some(l => !l.length)) continue;
+    const mem = new Set();
+    for (const a of L[0]) for (const b of L[1]) for (const c of L[2]) {
+      if (a.key === b.key || a.key === c.key || b.key === c.key) continue;
+      if (dist(a.cell, b.cell) <= 2 && dist(a.cell, c.cell) <= 2 && dist(b.cell, c.cell) <= 2) { mem.add(a.cell); mem.add(b.cell); mem.add(c.cell); }
+    }
+    if (mem.size) spots[sp.id] = [...mem];
+  }
+  const fx = S.desks.map((d, i) => deskFx(d, i, objs, spots));
+  LC = {ver: S.lver, map, objs, spots, fx};
+  return LC;
+}
+function deskFx(d, i, objs, spots) {
+  const f = {prod: 1, mental: 0, doze: 1, wake: BAL.doze.auto, noDoze: false, write: 0, coffee: false, ideaW: 1, racks: 0, plants: 0, study: false, win: false};
+  if (d.cell < 0) return f;
+  const s = deskStu(d);
+  if (rc(d.cell)[0] === 0) { f.mental += BAL.fx.window; f.win = true; }
+  for (const o of objs) {
+    if (o.key === 'd' + i || dist(o.cell, d.cell) > 1) continue;
+    if (o.kind === 'item') {
+      if (o.t === 'rack') f.racks++;
+      else if (o.t === 'plant') { f.plants++; f.mental += BAL.fx.plant; }
+      else if (o.t === 'coffee') { f.doze = 0.5; f.coffee = true; }
+      else if (o.t === 'board') f.ideaW = 3;
+      else if (o.t === 'shelf') f.write += BAL.fx.shelfWrite;
+      else if (o.t === 'sofa') f.wake = BAL.doze.sofaAuto;
+    } else if (s) { const s2 = deskStu(S.desks[o.i]); if (s2 && s2.role === s.role) f.study = true; }
+  }
+  if (f.racks) { f.prod += BAL.fx.rackProd * Math.min(2, f.racks); f.mental += BAL.fx.rackMental * f.racks; }
+  if (f.study && s) { if (s.role === 'exp') f.prod += BAL.fx.study; else f.write += 1; }
+  const near = id => spots[id] && spots[id].some(c => dist(c, d.cell) <= 1);
+  f.night = near('night'); if (f.night) f.prod += BAL.fx.nightSpot;
+  f.heal = near('heal'); if (f.heal) f.noDoze = true;
+  f.zen = near('zen'); if (f.zen) f.mental += BAL.fx.zenMental;
+  if (s) { const pt = partnerOf(s); if (pt) { const pd = S.desks.find(x => x.sid === pt.id); f.love = pd && pd.cell >= 0 && dist(pd.cell, d.cell) <= 1; f.mental += f.love ? 3 : -1; } }
+  return f;
+}
+const spotOn = id => !!layout().spots[id];
+const itemsPlaced = t => S.items.filter(x => x.t === t && x.cell >= 0).length;
+const itemOwned = t => S.items.filter(x => x.t === t).length;
+const itemCost = t => { const a = BAL.items[t].cost, n = itemOwned(t); return n < a.length ? a[n] : Infinity; };
+function emptyCells() { const m = layout().map; const out = []; for (let c = 0; c < m.length; c++) if (!m[c]) out.push(c); return out; }
+function layoutScore() {
+  const L = layout();
+  let mental = 0, protect = 0;
+  S.desks.forEach((d, i) => { const s = deskStu(d); if (!s || d.cell < 0) return; const f = L.fx[i];
+    mental += clamp(s.mental + f.mental, 0, 20); if (f.noDoze) protect += 1; else { if (f.doze < 1) protect += 0.5; if (f.wake < BAL.doze.auto) protect += 0.2; } if (f.ideaW > 1) protect += 0.2; });
+  return (rawRate(false) + 1) * (1 + 0.01 * mental + 0.03 * protect) * (1 + 0.02 * teamRates().W) * (1 + 0.05 * Object.keys(L.spots).length);
+}
+function placeBest(obj) {
+  const empties = emptyCells(); if (!empties.length) { obj.cell = -1; bump(); return false; }
+  let best = empties[0], bs = -1;
+  for (const c of empties) { obj.cell = c; bump(); const sc = layoutScore(); if (sc > bs) { bs = sc; best = c; } }
+  obj.cell = best; bump(); return true;
+}
+function recommendLayout() {
+  for (const it of S.items) if (it.cell < 0) placeBest(it);
+  const all = [...S.desks, ...S.items].filter(o => o.cell >= 0);
+  let best = layoutScore();
+  for (let pass = 0; pass < 3; pass++) {
+    let improved = false;
+    for (const x of all) for (let c = 0; c < cellsN(); c++) {
+      if (c === x.cell) continue;
+      const other = all.find(y => y.cell === c), old = x.cell;
+      x.cell = c; if (other) other.cell = old; bump();
+      const sc = layoutScore();
+      if (sc > best * 1.0001) { best = sc; improved = true; } else { x.cell = old; if (other) other.cell = c; bump(); }
+    }
+    if (!improved) break;
+  }
+  finalizeLayout();
+}
+function finalizeLayout() {
+  bump(); const L = layout();
+  for (const id in L.spots) if (!S.found[id]) {
+    S.found[id] = 1; const t = THEME.spots[id];
+    queue(() => sheet(`<div class="big">${t[0]}</div><h2>${t[1]} 발견!</h2><p>${t[2]}</p><div class="reward">${t[3]}</div><button class="btn" data-act="close">좋아요</button>`));
+  }
+}
+
+// ---------------------------------------------------------------- 계산
+const stageMult = () => BAL.stages.slice(0, S.stage + 1).reduce((m, s) => m * s.mult, 1);
+function globalMult(withBuffs = true) {
+  let m = stageMult();
+  for (const u of BAL.upgrades) if (S.upg[u.id] && u.eff === 'gen') m *= u.val;
+  m *= BAL.repeat.eff ** S.rep;
+  m *= 1 + BAL.student.gradBonus * S.grads;
+  if (withBuffs) for (const b of S.buffs) if (b.k === 'gen') m *= b.m;
+  return m;
+}
+function equipRate(lv) { return lv > 0 ? BAL.equip.base * lv * BAL.equip.tierMult ** Math.floor(lv / BAL.equip.tier) : 0; }
+const equipCost = lv => BAL.equip.cost0 * BAL.equip.growth ** lv;
+const equipMax = () => BAL.equip.maxLv[S.stage];
+const equipName = lv => THEME.equip[Math.min(THEME.equip.length - 1, Math.floor(lv / BAL.equip.tier))];
+function personMult(d, f, withTime = true) {
+  if (d.sid === 'me') return 1 + BAL.student.codeMult * 3;
+  const s = deskStu(d); if (!s) return 0;
+  let m = (1 + BAL.student.codeMult * s.code) * (1 + BAL.student.lvMult * (s.lv - 1));
+  if (s.trait === 'gear') m *= 1.3;
+  if (s.trait === 'home') m *= 0.9;
+  if (s.trait === 'coffee') m *= f.coffee ? 1.5 : itemsPlaced('coffee') ? 1 : 0.8;
+  if (s.trait === 'night' && withTime) { const h = new Date().getHours(); m *= (h >= 22 || h < 4) ? 2 : 0.8; }
+  if (s.trait === 'deadline' && S.orders.some(o => o.urgent)) m *= 3;
+  return m;
+}
+const isAway = s => !!(s && s.away && S.t < s.away);
+const stuBuff = s => (s && s.bu && S.t < s.bu) ? s.bm : 1;
+const partnerOf = s => { const c = S.couples.find(c => c.includes(s.id)); return c ? stu(c[0] === s.id ? c[1] : c[0]) : null; };
+function deskRate(i, wb = true) {
+  const d = S.desks[i]; if (!d || !d.sid || d.cell < 0) return 0;
+  const s = deskStu(d);
+  if (d.sid !== 'me' && (!s || s.role !== 'exp' || (wb && s.doze) || isAway(s))) return 0;
+  const f = layout().fx[i];
+  return equipRate(d.lv) * personMult(d, f) * f.prod * globalMult(wb) * stuBuff(s);
+}
+const rawRate = (wb = true) => { let r = 0; for (let i = 0; i < S.desks.length; i++) r += deskRate(i, wb); return r; };
+const serverOn = () => S.stage >= 1;
+const serverCap = (lv = S.server) => serverOn() ? BAL.server.cap0 * BAL.server.capGrowth ** (lv - 1) * (1 + BAL.server.rackBonus * Math.max(0, itemsPlaced('rack') - 1)) : Infinity;
+const serverCost = () => BAL.server.cost0 * BAL.server.costGrowth ** (S.server - 1);
+const procRate = (wb = true) => Math.min(rawRate(wb), serverCap());
+function tapMult() { let m = 1; for (const u of BAL.upgrades) if (S.upg[u.id] && u.eff === 'tap') m *= u.val; for (const b of S.buffs) if (b.k === 'tap') m *= b.m; return m; }
+const tapValue = () => (BAL.tapBase + BAL.tapPct * procRate()) * tapMult();
+const offCap = () => BAL.offCap + (S.upg.chair ? 4 * 3600 : 0);
+const offEff = () => BAL.offEff + (itemsPlaced('sofa') ? BAL.sofaOffEff : 0);
+const citPerSec = () => S.citRate;
+const wPerSec = () => BAL.wPerCit * S.cit;
+const paperCost = v => BAL.venues[v].cost * BAL.paperGrowth ** S.vcount[v];
+const slots = () => BAL.stages[S.stage].slots;
+const repCost = () => BAL.repeat.base * BAL.repeat.growth ** S.rep;
+const deskCost = () => BAL.desks.cost0 * BAL.desks.growth ** (S.desks.length - 1);
+const deskMax = () => BAL.desks.max[S.stage];
+const writers = () => S.students.filter(s => s.role === 'write');
+const P = BAL.paper;
+function teamRates() {
+  const L = layout(); let E = 3, W = 3, N = 3, n = 1, code = 3, mental = 0;
+  S.desks.forEach((d, i) => { const s = deskStu(d); if (!s || d.cell < 0 || s.doze || isAway(s)) return; n++; mental += clamp(s.mental + L.fx[i].mental, 0, 20);
+    if (s.role === 'exp') { E += s.code; code += s.code; } else W += s.write + L.fx[i].write;
+    N += s.lv / 3 + (s.trait === 'writer' ? 1 : 0); });
+  return {E: E * P.rateE, W: W * P.rateW, N: N * P.rateN, bug: n * P.bugRate * Math.max(0.3, 1 - mental / (n * 25)), debug: code * P.debugRate};
+}
+function compat(t, m) { const k = t + '-' + m; if (THEME.compatBest.includes(k)) return 3; if (THEME.compatBad.includes(k)) return 0; return ((t + 1) * (m + 2)) % 3 === 0 ? 2 : 1; }
+const compatName = c => ['별로…', '보통', '좋음', '찰떡!'][c];
+const compatStars = c => '★'.repeat(c) + '☆'.repeat(3 - c);
+const topicLv = t => Math.min(5, 1 + Math.floor(Math.sqrt(S.topicExp[t] || 0)));
+const trendTopic = () => S.unlockT[Math.floor(S.t / 86400 + 3) % S.unlockT.length];
+const paperMult = p => P.compatMult[compat(p.t, p.m)] * (1 + P.topicLvMult * (topicLv(p.t) - 1)) * P.dirs[p.dir].pts;
+const writeTime = (v, dir = 'normal') => BAL.venues[v].write * P.dirs[dir].time;
+const reviewTime = p => BAL.venues[p.v].review * (p.rev > 0 ? BAL.revReview : 1);
+const planCost = (v, dir = 'normal') => paperCost(v) * P.dirs[dir].cost * (S.feeOn ? 0.6 : 1);
+const revisionCost = p => p.cost * (p.dec === 'minor' ? P.revCostMinor : P.revCostMajor) * (spotOn('write') ? BAL.fx.writeSpotRev : 1);
+const hireCost = g => BAL.hire.cost0 * BAL.hire.growth ** S.hired * BAL.hire.gradeMult[g];
+const trainCost = s => BAL.student.trainCost0 * BAL.student.trainGrowth ** s.lv;
+const expNeed = s => 20 * s.lv;
+const canGrad = s => S.stage >= BAL.student.gradStage && s.lv >= (s.gradLv || BAL.student.gradLv) && !isAway(s);
+const adsOn = () => S.sessions >= 2 && PF.adReady();
+function adLeft(kind) { const today = new Date().toDateString(); if (S.ads.day !== today) S.ads = {day: today, offline: 0, night: 0, fast: 0, event: 0, cands: 0}; return BAL.adLimits[kind] - (S.ads[kind] || 0); }
+
+// ---------------------------------------------------------------- 진행
+function step(dt, realDt = dt) {
+  S.D += procRate() * dt;
+  S.cit += citPerSec() * dt; S.W += wPerSec() * dt;
+  S.t += dt; S.playSecs += dt; S.evT += realDt;
+  gainExp(dt / 60);
+  paperTick(dt);
+  awardCheck();
+  S.buffs = S.buffs.filter(b => b.until > S.t);
+  for (const s of S.students) { if (s.doze && S.t >= s.doze) s.doze = 0; if (s.away && S.t >= s.away) { s.away = 0; if (s.awayGain) { s.mental = Math.min(BAL.student.statCap, s.mental + s.awayGain); toast(`🏖️ ${s.name} 복귀! 멘탈 +${s.awayGain}`); s.awayGain = 0; } } }
+  const before = S.orders.length;
+  S.orders = S.orders.filter(o => o.expires > S.t);
+  if (S.orders.length < before) toast('⌛ 과제 의뢰 하나가 마감됐어요');
+  if (serverOn()) {
+    if (S.evT >= S.nextOrder) { if (S.orders.length < BAL.orders.max) newOrder(); S.nextOrder = S.evT + rr(...BAL.orders.gap); }
+    if (S.cands.length === 0 || S.evT >= S.candAt) newCands();
+  }
+  if (S.evT >= S.nextIdea) { S.idea = {desk: ideaDesk(), until: S.evT + BAL.idea.life}; S.nextIdea = S.evT + rr(...BAL.idea.gap) * (spotOn('snack') ? BAL.fx.snackIdeaGap : 1); }
+  if (S.idea && S.evT > S.idea.until) S.idea = null;
+  if (S.stage >= 2 && S.evT >= S.nextDoze) { doze(); S.nextDoze = S.evT + rr(...BAL.doze.gap); }
+  if (S.evT >= S.nextEvent) { if (S.stage >= 1 && !modalBusy()) fireEvent(); else S.nextEvent = S.evT + 30; }
+  merchantCheck();
+}
+function gainExp(min) { for (const s of S.students) { s.exp += min * BAL.student.expPerMin; while (s.exp >= expNeed(s)) { s.exp -= expNeed(s); levelUp(s); } } }
+function levelUp(s) { s.lv++; const k = s.role === 'write' ? 'write' : 'code'; if (s[k] < BAL.student.statCap) s[k]++; }
+function ideaDesk() {
+  const L = layout(); const c = [];
+  S.desks.forEach((d, i) => { if (d.sid && d.cell >= 0) for (let k = 0; k < L.fx[i].ideaW; k++) c.push(i); });
+  return c.length ? rnd(c) : 0;
+}
+function doze() {
+  const L = layout();
+  const cand = S.desks.map((d, i) => [d, i]).filter(([d, i]) => { const s = deskStu(d); return s && !s.doze && !isAway(s) && s.trait !== 'home' && s.role === 'exp' && !L.fx[i].noDoze; });
+  if (!cand.length) return;
+  if (S.t < S.noDozeUntil) return;
+  const [d, i] = rnd(cand), s = deskStu(d), f = L.fx[i];
+  if (Math.random() < clamp(s.mental + f.mental, 0, 20) / 25) return;
+  if (Math.random() > f.doze) return;
+  s.doze = S.t + f.wake;
+}
+function offline(secs) {
+  const capped = Math.min(secs, offCap()), eff = offEff();
+  for (const s of S.students) s.doze = 0;
+  const dGain = procRate(false) * eff * capped;
+  const c0 = S.cit, cGain = citPerSec() * secs;
+  const wGain = BAL.wPerCit * (c0 + cGain / 2) * capped * eff;
+  const before = S.papers.filter(p => p.state === 'result').length;
+  S.cit += cGain;
+  OFFSIM = true; for (let left = secs; left > 0; left -= 30) { const dt = Math.min(30, left); S.t += dt; paperTick(dt); } OFFSIM = false;
+  for (const s of S.students) if (s.away && S.t >= s.away) { s.away = 0; if (s.awayGain) { s.mental = Math.min(BAL.student.statCap, s.mental + s.awayGain); s.awayGain = 0; } }
+  awardCheck();
+  S.buffs = S.buffs.filter(b => b.until > S.t);
+  gainExp(Math.min(secs, offCap()) / 60 * eff);
+  S.orders = S.orders.filter(o => o.expires > S.t);
+  const arrived = S.papers.filter(p => p.state === 'result').length - before;
+  let newO = 0;
+  if (serverOn()) { const n = Math.min(BAL.orders.max - S.orders.length, Math.floor(secs / 1800)); for (let i = 0; i < n; i++) { newOrder(true); newO++; } newCands(); }
+  S.nextEvent = S.evT + rr(120, 240);
+  if (secs < 60) { S.D += dGain; S.W += wGain; return; }
+  queue(() => offlineSheet({secs, capped, dGain, wGain, cGain, arrived, newO}));
+}
+
+// ---------------------------------------------------------------- 학생
+const trait = s => THEME.traits.find(t => t.id === s.trait);
+function makeStudent(grade) {
+  const lo = [1, 3, 6][grade], hi = [4, 7, 10][grade];
+  const t = rnd(THEME.traits);
+  const used = new Set([...S.students, ...S.cands].map(x => x.name));
+  let name = ''; for (let k = 0; k < 20 && (!name || used.has(name)); k++) name = rnd(THEME.surnames) + rnd(THEME.given);
+  const s = {id: ++S.sidN, name, face: rnd(THEME.faces), grade, code: ri(lo, hi), write: ri(lo, hi), mental: ri(Math.max(1, lo - 1), hi), trait: t.id, lv: [1, 2, 5][grade], exp: 0, role: 'exp', doze: 0};
+  if (t.id === 'writer') s.write += 3;
+  return s;
+}
+function newCands() {
+  const grades = [0, 1, 2].filter(g => BAL.hire.gradeStage[g] <= S.stage);
+  S.cands = [0, 1, 2].map(() => makeStudent(rnd(grades)));
+  S.candAt = S.evT + BAL.hire.refresh;
+}
+const emptyDesk = () => S.desks.findIndex(d => !d.sid && d.cell >= 0);
+function hire(i) {
+  const c = S.cands[i]; if (!c) return;
+  const cost = hireCost(c.grade), di = emptyDesk();
+  if (di < 0) { toast('빈 책상이 없어요. 시설에서 책상을 늘려요'); return; }
+  if (S.W < cost) return;
+  S.W -= cost; S.hired++;
+  S.students.push(c); S.desks[di].sid = c.id; S.cands.splice(i, 1);
+  bump(); click();
+  sheet(`<div class="big">${c.face}</div><h2>${c.name} 합류!</h2><p>${THEME.grades[c.grade]} · ${trait(c).ico} ${trait(c).name}<br>“잘 부탁드립니다, 선배님!”</p><button class="btn" data-act="close">환영해요</button>`);
+}
+function addDesk() {
+  if (S.desks.length >= deskMax()) return;
+  const c = deskCost(); if (S.W < c) return;
+  if (!emptyCells().length) { toast('연구실이 꽉 찼어요. 물건을 보관하거나 승진해서 이사해요'); return; }
+  S.W -= c; const d = {lv: 1, sid: null, cell: -1}; S.desks.push(d); placeBest(d); finalizeLayout(); click(); toast('🪑 책상 하나가 늘었어요');
+}
+function buyItem(t) {
+  const c = itemCost(t); if (!isFinite(c) || S.W < c || BAL.items[t].stage > S.stage) return;
+  S.W -= c; const it = {t, cell: -1}; S.items.push(it);
+  const ok = placeBest(it); finalizeLayout(); click();
+  toast(ok ? `${THEME.items[t][1]} ${THEME.items[t][0]} 놓았어요` : `${THEME.items[t][0]}: 자리가 없어 보관함에 넣었어요`);
+}
+function upEquip(di, n) {
+  const d = S.desks[di]; let k = 0;
+  while (k < n && d.lv < equipMax() && S.D >= equipCost(d.lv)) { S.D -= equipCost(d.lv); d.lv++; k++; }
+  if (k) click(); return k;
+}
+function upServer() { const c = serverCost(); if (S.D < c) return; S.D -= c; S.server++; click(); }
+function setRole(sid, role) { const s = stu(sid); if (!s) return; if (role === 'write' && S.stage < 2) return; s.role = role; s.doze = 0; finalizeLayout(); }
+function train(sid) { const s = stu(sid); if (!s) return; const c = trainCost(s); if (S.W < c) return; S.W -= c; s.exp += BAL.student.trainExp; gainExp(0); click(); }
+function graduate(sid) {
+  const s = stu(sid); if (!s || !canGrad(s)) return;
+  S.students = S.students.filter(x => x !== s);
+  const d = S.desks.find(d => d.sid === sid); if (d) d.sid = null;
+  S.grads += s.track === 'phd' ? 2 : 1; S.couples = S.couples.filter(c => !c.includes(sid)); bump();
+  sheet(`<div class="big">🎓</div><h2>${s.name} ${s.track === 'phd' ? '박사 ' : ''}졸업!</h2><p>${s.track === 'phd' ? '박사 학위 취득! 졸업생 2명 몫의 보너스' : rnd(THEME.jobs)}<br>“선배님 덕분이에요.” (책상과 장비는 남아요)</p>
+    <div class="reward">졸업생 ${S.grads}명 → 연구실 생산 +${Math.round(BAL.student.gradBonus * S.grads * 100)}% · 과제 보상 +${Math.round(BAL.orders.gradBonus * S.grads * 100)}%</div>
+    <button class="btn" data-act="close">축하해요</button>`);
+}
+function wake(sid) { const s = stu(sid); if (s && s.doze) { s.doze = 0; click(); toast(`☕ ${s.name} 깼다!`); } }
+function takeIdea() {
+  if (!S.idea) return;
+  const amt = Math.max(10, procRate() * BAL.idea.secs) * (spotOn('brain') ? BAL.fx.brainIdea : 1);
+  S.D += amt; S.idea = null; click();
+  const wp = S.papers.find(p => p.state === 'writing' || p.state === 'revising');
+  if (wp) { const n = teamRates().N * paperMult(wp) * 10; wp.N += n; toast(`💡 번뜩! 데이터 +${fmt(amt)} · 참신성 +${fmt(n)}`); } else toast(`💡 번뜩! 데이터 +${fmt(amt)}`);
+}
+
+// ---------------------------------------------------------------- 과제 의뢰
+function newOrder(quiet) {
+  const pr = Math.max(procRate(false), 1), secs = rr(...BAL.orders.needSecs);
+  const urgent = !quiet && Math.random() < BAL.orders.urgentChance;
+  const [org, title] = rnd(THEME.orders);
+  const reward = BAL.orders.reward[S.stage] * (secs / 300) * (urgent ? BAL.orders.urgentMult : 1) * (1 + BAL.orders.gradBonus * S.grads);
+  S.orders.push({id: ++S.oid, org, title, need: round2(Math.max(50, pr * secs)), reward: round2(reward), cit: S.stage * (urgent ? 2 : 1), urgent,
+    expires: S.t + rr(...(urgent ? BAL.orders.urgentPatience : BAL.orders.patience))});
+  if (!quiet) toast(urgent ? '🚨 급한 과제 의뢰가 왔어요!' : '📨 새 과제 의뢰가 왔어요');
+}
+function firstOrder() {
+  const pr = Math.max(procRate(false), 1);
+  S.orders.push({id: ++S.oid, org: '교수님 지인 회사', title: '엑셀 매크로 좀…', need: round2(Math.max(50, pr * 45)), reward: 60, cit: 1, urgent: false, expires: S.t + 3600});
+  toast('📨 첫 과제 의뢰가 왔어요!');
+}
+function deliver(id) {
+  const o = S.orders.find(x => x.id === id); if (!o || S.D < o.need) return;
+  S.D -= o.need; S.W += o.reward; S.cit += o.cit; S.delivered++; S.rp += P.rpOrder;
+  S.orders = S.orders.filter(x => x !== o);
+  click(); toast(`✅ ${o.org} 납품! 💰+${fmt(o.reward)}`);
+}
+
+// ---------------------------------------------------------------- 논문
+function tap(ev) {
+  const v = tapValue(); S.D += v; S.taps++; click();
+  const w = $('tapWrap'); if (!w) return;
+  const f = document.createElement('div'); f.className = 'float'; f.textContent = '+' + fmt(v);
+  if (ev && ev.clientX) { const r = w.getBoundingClientRect(); f.style.left = (ev.clientX - r.left) + 'px'; }
+  w.appendChild(f); setTimeout(() => f.remove(), 800);
+}
+function josa(w, a, b) { const c = w.charCodeAt(w.length - 1); if (c < 0xac00 || c > 0xd7a3) return w + b; const j = (c - 0xac00) % 28; return w + (j === 0 || j === 8 ? b : a); }
+const makeTitle = (t, m) => `${josa(THEME.methods[m], '으로', '로')} 다시 보는 ${THEME.topics[t]}: ${rnd(THEME.catches)}`;
+const PA = {N: ['💡 참신', 2], E: ['🧪 실험', 0], W: ['✍️ 글', 1]};
+function autoPlan() {
+  const tv = targetVenue(), v = BAL.venues[tv].unlock <= S.stage ? tv : Math.max(...BAL.venues.map((x, i) => x.unlock <= S.stage ? i : 0));
+  if (!Object.keys(S.combos).length) return {v, t: 0, m: 1, dir: 'normal', seq: -1};
+  let best = null, bs = -1; const tr = trendTopic();
+  for (const t of S.unlockT) for (const m of S.unlockM) {
+    const k = t + '-' + m, c = S.combos[k];
+    const pen = Math.max(0.5, 1 - P.repeatPen * (S.comboUse[k] || 0));
+    const sc = (c === undefined ? 1.05 : P.compatMult[c]) * (t === tr ? 1.15 : 1) * (1 + P.topicLvMult * (topicLv(t) - 1)) * (2 + pen) / 3;
+    if (sc > bs) { bs = sc; best = {v, t, m, dir: 'normal', seq: -1}; }
+  }
+  return best;
+}
+function estimate(pl) {
+  const tr = teamRates(), k = pl.t + '-' + pl.m, c = S.combos[k], cm = c === undefined ? 1 : P.compatMult[c];
+  const m = cm * (1 + P.topicLvMult * (topicLv(pl.t) - 1)) * P.dirs[pl.dir].pts, T = writeTime(pl.v, pl.dir), r = P.req[pl.v];
+  let E = tr.E * m * T, W = tr.W * m * T, N = tr.N * m * T * (pl.t === trendTopic() ? 1.2 : 1) * Math.max(0.5, 1 - P.repeatPen * (S.comboUse[k] || 0));
+  if (pl.seq >= 0 && S.hof[pl.seq]) { const h = S.hof[pl.seq]; E += h.E * P.sequelCarry; W += h.W * P.sequelCarry; N += h.N * P.sequelCarry; }
+  const ratio = [N / r[2], E / r[0], W / r[1]], f = x => 1 + 5 * x;
+  const tot = [f(ratio[0]), f(ratio[1]) - 1, f(ratio[2]), f((ratio[0] + ratio[1] + ratio[2]) / 3)].map(x => clamp(x, 1, 10));
+  return Math.round(sum(tot));
+}
+function estLabel(t) { return t >= P.th.hof ? '🏛️ 명예의 전당 노려 볼 만' : t >= P.th.accept ? '😊 바로 게재 가능성 높음' : t >= P.th.minor ? '🙂 마이너 리비전 정도' : t >= P.th.major ? '😐 메이저 리비전 각오' : '😰 리젝 위험'; }
+function startPaper(pl) {
+  const {v, dir} = pl; let {t, m} = pl;
+  const h = pl.seq >= 0 ? S.hof[pl.seq] : null; if (h) { t = h.t; m = h.m; }
+  if (BAL.venues[v].unlock > S.stage || S.papers.length >= slots()) return false;
+  const c = planCost(v, dir); if (S.D < c) return false;
+  S.D -= c; S.vcount[v]++; S.feeOn = 0;
+  const p = {id: ++S.pid, v, t, m, dir, state: 'writing', start: S.t, end: S.t + writeTime(v, dir), cost: c, E: 0, W: 0, N: 0, bugs: 0, rev: 0, title: makeTitle(t, m), focus: null};
+  if (h && !h.sequeled) { p.E = h.E * P.sequelCarry; p.W = h.W * P.sequelCarry; p.N = h.N * P.sequelCarry; p.title = h.title.split(':')[0] + ' 2: ' + rnd(THEME.catches); h.sequeled = 1; }
+  const k = t + '-' + m, cp = compat(t, m), first = S.combos[k] === undefined; S.combos[k] = cp;
+  p.nPen = Math.max(0.5, 1 - P.repeatPen * (S.comboUse[k] || 0)); S.comboUse[k] = (S.comboUse[k] || 0) + 1;
+  S.papers.push(p); S.plan.seq = -1; click();
+  toast(first ? `📝 새 조합 발견! 궁합 ${compatStars(cp)} ${compatName(cp)}` : `📝 ${THEME.venues[v]} 논문 쓰기 시작`);
+  return true;
+}
+function paperTick(dt) {
+  if (!S.papers.length) return;
+  const tr = teamRates();
+  for (const p of S.papers) {
+    if (p.state === 'writing' || p.state === 'revising') {
+      const m = paperMult(p) * (S.t < S.deadlineUntil ? 1.15 : 1), f = p.focus || {}, tn = p.t === trendTopic() ? 1.2 : 1;
+      const g = a => p.state === 'writing' ? 1 : (f[a] ? P.revRate : 0);   // 리비전 땐 지적받은 점수만 보강
+      p.E += tr.E * m * dt * g('E'); p.W += tr.W * m * dt * g('W'); p.N += tr.N * m * tn * (p.nPen || 1) * dt * g('N');
+      p.bugs += tr.bug * P.dirs[p.dir].bug * dt;
+      if (p.state === 'writing' && !OFFSIM) { const pr = (S.t - p.start) / (p.end - p.start);
+        const okEv = (p.v >= 1 || sum(S.published) >= 1) && S.evT >= (S.nextPEv || 0);
+        if (pr >= 0.25 && !p.ev1) { p.ev1 = 1; if (okEv && Math.random() < 0.8) { S.nextPEv = S.evT + 150; paperEvent(p); } }
+        else if (pr >= 0.6 && !p.ev2) { p.ev2 = 1; if (okEv && Math.random() < 0.5) { S.nextPEv = S.evT + 150; paperEvent(p); } } }
+      if (S.t >= p.end) { if (p.state === 'writing' && p.bugs >= 1) p.state = 'debug'; else { p.state = 'review'; p.start = S.t; p.end = S.t + reviewTime(p); } }
+    } else if (p.state === 'debug') {
+      const fix = Math.min(p.bugs, tr.debug * dt); p.bugs -= fix; S.rp += fix * P.rpPerBug * P.dirs[p.dir].rp;
+      if (p.bugs < 0.5) { p.bugs = 0; p.state = 'review'; p.start = S.t; p.end = S.t + reviewTime(p); }
+    } else if (p.state === 'review' && S.t >= p.end) { judge(p); p.state = 'result'; S.rp += P.rpReview * P.dirs[p.dir].rp; }
+  }
+}
+function skipDebug(id) { const p = S.papers.find(x => x.id === id); if (!p || p.state !== 'debug') return; p.state = 'review'; p.start = S.t; p.end = S.t + reviewTime(p); toast(`📮 오류 ${Math.round(p.bugs)}개를 안고 투고! 리뷰어가 찾을 수도…`); }
+function judge(p) {
+  const r = P.req[p.v], ratio = [p.N / r[2], p.E / r[0], p.W / r[1]], f = x => 1 + 5 * x, nz = () => rr(-0.6, 0.6);
+  let sc = [f(ratio[0]) + nz(), f(ratio[1]) - 1 + nz() + (spotOn('r2') ? 1 : 0), f(ratio[2]) + nz(), f((ratio[0] + ratio[1] + ratio[2]) / 3) + nz()];
+  p.bugFound = Math.min(3, Math.round(p.bugs / 6));
+  for (let k = 0; k < p.bugFound; k++) sc[ri(0, 3)] -= 1;
+  sc = sc.map(x => clamp(Math.round(x), 1, 10));
+  if (!sum(S.published) && p.v === 0 && p.rev === 0) while (sum(sc) < P.th.accept) sc[sc.indexOf(Math.min(...sc))]++;   // 첫 논문은 꼭 게재(튜토리얼)
+  p.sc = sc; p.total = sum(sc);
+  if (p.total >= P.th.accept) p.dec = 'accept';
+  else if (p.rev >= P.maxRev) p.dec = p.total >= P.th.minor ? 'accept' : 'reject';
+  else p.dec = p.total >= P.th.minor ? 'minor' : p.total >= P.th.major ? 'major' : 'reject';
+  p.comments = [];
+  if (p.dec === 'minor' || p.dec === 'major') {
+    const k = p.dec === 'minor' ? P.revNeedMinor : P.revNeedMajor, A = ['N', 'E', 'W'];
+    sc.forEach((x, i) => { if (x <= 6 || (i === 1 && p.dec === 'major')) { const a = i < 3 ? [A[i]] : A; p.comments.push({r: i, a, need: a.map(z => r[PA[z][1]] * k), text: rnd(THEME.comments[i])}); } });
+    if (!p.comments.length) p.comments.push({r: 1, a: ['E'], need: [r[0] * k], text: rnd(THEME.comments[1])});
+  }
+}
+function scoresHTML(p) {
+  return `<div class="scores">${p.sc.map((x, i) => `<div class="sc ${x <= 4 ? 'bad' : ''}" style="animation-delay:${0.25 + i * 0.4}s"><small>${['리뷰어 1', '리뷰어 2 😈', '리뷰어 3', '편집위원'][i]}</small><b>${x}</b></div>`).join('')}</div>
+    <div class="total">합계 <b>${p.total}</b>/40${p.bugFound ? ` <small class="muted">(🐛 오류 ${p.bugFound}개 들킴)</small>` : ''}</div>`;
+}
+const decName = d => ({accept: '게재 승인', minor: '마이너 리비전', major: '메이저 리비전', reject: '리젝'})[d];
+function openResult(id) {
+  const p = S.papers.find(x => x.id === id); if (!p) return;
+  if (p.state === 'result') { if (p.dec === 'accept') return publish(p); p.state = p.dec === 'reject' ? 'rejected' : 'revwait'; }
+  if (p.state === 'revwait') revisionSheet(p); else if (p.state === 'rejected') rejectSheet(p);
+}
+function revisionSheet(p) {
+  const c = revisionCost(p), A = ['💡 참신성', '🧪 실험', '✍️ 글'];
+  sheet(`<h2>📬 ${THEME.venues[p.v]} 심사 결과</h2>${scoresHTML(p)}<h2>${p.dec === 'minor' ? '📝 마이너 리비전' : '📝 메이저 리비전'} (${p.rev + 1}/${P.maxRev})</h2>
+    <div class="reward left">${p.comments.map(cm => `<div class="cm"><b>${['리뷰어 1', '리뷰어 2 😈', '리뷰어 3', '편집위원'][cm.r]}:</b> “${cm.text}”<br><small class="muted">→ 보강: ${cm.a.map((a, i) => `${A[['N', 'E', 'W'].indexOf(a)]} +${fmt(cm.need[i])}`).join(', ')}</small></div>`).join('')}</div>
+    <div class="muted">리비전 동안 팀이 지적받은 점수만 보강해요 · ${fmtT(BAL.venues[p.v].write * (p.dec === 'minor' ? P.revTime.minor : P.revTime.major))} 뒤 재심사</div>
+    <button class="btn" data-act="startRev" data-id="${p.id}" ${S.D < c ? 'disabled' : ''}>${S.D < c ? `데이터 ${fmt(c - S.D)} 더 필요` : `리비전 시작 (📊 ${fmt(c)}${spotOn('write') ? ', 📚 −30%' : ''})`}</button><button class="btn ghost" data-act="close">나중에</button>`);
+}
+function startRev(id) {
+  const p = S.papers.find(x => x.id === id); if (!p || p.state !== 'revwait') return;
+  const c = revisionCost(p); if (S.D < c) { toast('데이터가 부족해요'); return; }
+  S.D -= c; p.rev++; p.state = 'revising'; p.start = S.t; p.end = S.t + BAL.venues[p.v].write * (p.dec === 'minor' ? P.revTime.minor : P.revTime.major);
+  p.focus = {}; for (const cm of p.comments) for (const a of cm.a) p.focus[a] = 1;
+  closeModal(); toast('✍️ 리비전 시작! 답변서 쓰는 중'); click();
+}
+function rejectSheet(p) {
+  const c = p.cost * P.resubCost;
+  sheet(`<h2>📬 ${THEME.venues[p.v]} 심사 결과</h2>${scoresHTML(p)}<div class="big">😢</div><h2>리젝…</h2><p>「${p.title}」<br>리뷰어 2: “${rnd(THEME.comments[1])}”</p>
+    <div class="reward">보강해서 재투고하면 모든 점수 +${Math.round(P.resubBoost * 100)}% (📊 ${fmt(c)})</div>
+    <button class="btn" data-act="resub" data-id="${p.id}" data-low="0" ${S.D < c ? 'disabled' : ''}>같은 곳(${THEME.venues[p.v]})에 다시 내기</button>
+    ${p.v > 0 ? `<button class="btn ghost" data-act="resub" data-id="${p.id}" data-low="1" ${S.D < c ? 'disabled' : ''}>한 단계 낮춰 ${THEME.venues[p.v - 1]}에 내기</button>` : ''}
+    <button class="btn ghost" data-act="giveup" data-id="${p.id}">포기하고 교훈 얻기 (🔬 +${P.rpGiveup})</button>`);
+}
+function resubmit(id, low) {
+  const p = S.papers.find(x => x.id === id); if (!p || p.state !== 'rejected') return;
+  const c = p.cost * P.resubCost; if (S.D < c) return;
+  S.D -= c; if (low && p.v > 0) p.v--;
+  for (const a of ['E', 'W', 'N']) p[a] *= 1 + P.resubBoost;
+  p.rev = 0; p.state = 'review'; p.start = S.t; p.end = S.t + reviewTime(p); p.bugs = 0;
+  closeModal(); toast(`📮 ${THEME.venues[p.v]}에 재투고!`); click();
+}
+function giveup(id) { S.papers = S.papers.filter(x => x.id !== id); S.rp += P.rpGiveup; closeModal(); toast(`📓 교훈을 얻었다… 🔬 +${P.rpGiveup}`); }
+function publish(p) {
+  S.papers = S.papers.filter(x => x !== p);
+  S.published[p.v]++; S.topicExp[p.t] = (S.topicExp[p.t] || 0) + 1;
+  const q = p.total / P.th.accept, trend = p.t === trendTopic(), hof = p.total >= P.th.hof && p.rev === 0;   // 명예의 전당: 리비전 없이 한 번에 32점↑
+  const w = BAL.venues[p.v].reward * 1.5 ** S.stage * q, cit = BAL.venues[p.v].cit * q * (trend ? 1.5 : 1) * (hof ? 1.5 : 1);
+  S.W += w; S.citRate += cit / 3600; S.rp += P.rpPublish[p.v];
+  S.weekPubs.push({title: p.title, total: p.total, rev: p.rev, v: p.v});
+  if (hof) S.hof.push({title: p.title, t: p.t, m: p.m, v: p.v, total: p.total, E: p.E, W: p.W, N: p.N, sequeled: 0});
+  if (p.v === 0 && S.published[0] > 2 && !hof) { toast(`🎉 워크숍 게재 (${p.total}점)! 💰+${fmt(w)}`); click(); checkPromotion(); save(); return; }
+  sheet(`<h2>📬 ${THEME.venues[p.v]} 심사 결과</h2>${scoresHTML(p)}<div class="big">${hof ? '🏛️' : '🎉'}</div><h2>${hof ? '명예의 전당!' : decName('accept') + '!'}</h2><p>「${p.title}」<br>${rnd(THEME.accept)}</p>
+    <div class="reward">💰 논문 장려금 +${fmt(w)}<br>📈 인용 시간당 +${fmt(cit)}${trend ? ' (🔥 트렌드)' : ''}<br>🔬 연구 포인트 +${P.rpPublish[p.v]}${p.rev ? `<br>📝 리비전 ${p.rev}번을 버텨 냈다` : ''}${hof ? '<br>🏛️ 리비전 없이 32점 이상! 후속 연구를 할 수 있어요 (점수 일부를 안고 시작)' : ''}</div>
+    <button class="btn" data-act="close">좋아요</button>`);
+  checkPromotion(); save();
+}
+// 연구 포인트로 해금
+function unlockTopic(t) { const c = P.unlockT[t]; if (S.unlockT.includes(t) || S.rp < c) return; S.rp -= c; S.unlockT.push(t); S.unlockT.sort((a, b) => a - b); toast(`🔬 새 주제: ${THEME.topics[t]}`); click(); }
+function unlockMethod(m) { const c = P.unlockM[m]; if (S.unlockM.includes(m) || S.rp < c) return; S.rp -= c; S.unlockM.push(m); S.unlockM.sort((a, b) => a - b); toast(`🔬 새 방법: ${THEME.methods[m]}`); click(); }
+// 시상식
+function awardCheck() {
+  while (S.t >= S.nextAward) {
+    S.nextAward += P.awardEvery;
+    const pubs = S.weekPubs; S.weekPubs = [];
+    if (!pubs.length) { queue(() => sheet(`<div class="big">🎤</div><h2>학회 시상식</h2><p>이번엔 수상작이 없었어요… 다음 시상식엔 꼭!</p><button class="btn" data-act="close">다음엔!</button>`)); continue; }
+    const best = pubs.reduce((a, b) => (b.total + b.v * 3 > a.total + a.v * 3 ? b : a)), surv = pubs.reduce((a, b) => (b.rev > a.rev ? b : a));
+    const won = [['🏆', '최우수 논문상', best]]; if (surv.rev > 0) won.push(['🥈', '리뷰어 2 생존상', surv]);
+    for (const w of won) S.trophies.push(w[0]);
+    S.rp += P.rpAward; S.cit += 20 * (best.v + 1) ** 2;
+    queue(() => sheet(`<div class="big">🎤</div><h2>학회 시상식</h2>${won.map(w => `<div class="reward">${w[0]} <b>${w[1]}</b><br>「${w[2].title}」 (${w[2].total}점)</div>`).join('')}
+      <p>🔬 연구 포인트 +${P.rpAward} · 📈 인용 +${fmt(20 * (best.v + 1) ** 2)}<br>트로피는 연구실 벽에 걸렸어요</p><button class="btn" data-act="close">감사합니다!</button>`));
+  }
+}
+// 떠돌이 상인 · 가방
+const shopPrice = id => round2(BAL.orders.reward[Math.max(1, S.stage)] * THEME.shop[id][3]);
+function merchantCheck() {
+  if (S.stage < 1 || modalBusy() || S.evT < S.nextMerchant) return;
+  S.nextMerchant = S.evT + rr(...P.merchantGap);
+  const ids = Object.keys(THEME.shop); S.stock = []; while (S.stock.length < 3) { const x = rnd(ids); if (!S.stock.includes(x)) S.stock.push(x); }
+  merchantSheet();
+}
+function merchantSheet() {
+  const [n, ico, line] = THEME.merchant;
+  sheet(`<div class="big">${ico}</div><h2>${n}</h2><p>${line}</p><div class="reward left">${S.stock.map(id => { const [nm, ic, desc] = THEME.shop[id], c = shopPrice(id);
+    return `<div class="item"><div class="ico">${ic}</div><div class="grow"><b>${nm}</b> <span class="muted">가방 ${S.inv[id] || 0}</span><br><small class="muted">${desc}</small></div><button class="btn sm" data-act="buyShop" data-id="${id}" ${S.W >= c ? '' : 'disabled'}>사기<small>💰 ${fmt(c)}</small></button></div>`; }).join('')}</div>
+    <button class="btn ghost" data-act="close">다음에 봐요</button>`);
+}
+function buyShop(id) { const c = shopPrice(id); if (S.W < c) return; S.W -= c; S.inv[id] = (S.inv[id] || 0) + 1; click(); toast(`${THEME.shop[id][1]} ${THEME.shop[id][0]}을(를) 가방에 넣었어요`); }
+function useItem(id) {
+  if (!S.inv[id]) return;
+  if (id === 'proof') { const p = S.papers.find(x => ['writing', 'revising', 'debug', 'review'].includes(x.state)); if (!p) { toast('쓰고 있는 논문이 없어요'); return; } p.W *= 1.3; }
+  if (id === 'energy') { S.noDozeUntil = S.t + 1800; for (const s of S.students) s.doze = 0; S.buffs.push({k: 'gen', m: 1.5, until: S.t + 1800, src: 'energy'}); }
+  if (id === 'snack') { for (const s of S.students) s.exp += 30; gainExp(0); }
+  if (id === 'fee') S.feeOn = 1;
+  if (id === 'note') S.rp += 10;
+  S.inv[id]--; click(); toast(`${THEME.shop[id][1]} ${THEME.shop[id][0]} 사용!`);
+}
+function fastReview(id) { const p = S.papers.find(x => x.id === id); if (!p || p.state !== 'review') return; watchAd('fast', () => { p.end = S.t; paperTick(0); toast('⚡ 심사 결과가 도착했어요'); }); }
+function checkPromotion() {
+  while (S.stage < 5) {
+    const [v, n] = BAL.stages[S.stage + 1].req;
+    if (S.published[v] < n) break;
+    S.stage++; const st = S.stage; bump();
+    if (st === 1) { queue(() => dailyCheck()); const r = {t: 'rack', cell: -1}; S.items.push(r); placeBest(r); finalizeLayout(); newCands(); firstOrder(); S.nextOrder = S.evT + 150; }
+    queue(() => promoSheet(st));
+  }
+}
+const targetVenue = () => S.stage >= 5 ? 4 : BAL.stages[S.stage + 1].req[0];
+
+// ---------------------------------------------------------------- 추천·한 번에 업그레이드
+function bestUpgrade(reserve = 0) {
+  let best = null;
+  const raw = rawRate(false), cap = serverCap(), L = layout();
+  S.desks.forEach((d, i) => {
+    if (!d.sid || d.cell < 0 || d.lv >= equipMax()) return;
+    const s = deskStu(d); if (d.sid !== 'me' && (!s || s.role !== 'exp')) return;
+    const c = equipCost(d.lv); if (S.D - c < reserve) return;
+    const now = deskRate(i, false), nxt = equipRate(d.lv + 1) * personMult(d, L.fx[i]) * L.fx[i].prod * globalMult(false);
+    const gain = Math.min(raw - now + nxt, cap) - Math.min(raw, cap), g = gain / c;
+    if (gain > 0 && (!best || g > best.g)) best = {kind: 'desk', i, cost: c, g};
+  });
+  if (serverOn()) {
+    const c = serverCost();
+    if (S.D - c >= reserve) { const gain = Math.min(raw, serverCap(S.server + 1)) - Math.min(raw, cap), g = gain / c; if (gain > 0 && (!best || g > best.g)) best = {kind: 'server', cost: c, g}; }
+  }
+  return best;
+}
+function paperReserve() { const tv = targetVenue(); return (!S.cleared && S.papers.length < slots() && BAL.venues[tv].unlock <= S.stage && S.D >= planCost(tv)) ? planCost(tv) : 0; }
+function autoUpgrade() {
+  const res = paperReserve(); let n = 0, sv = 0;
+  for (let k = 0; k < 3000; k++) { const b = bestUpgrade(res); if (!b) break; S.D -= b.cost; if (b.kind === 'desk') S.desks[b.i].lv++; else { S.server++; sv++; } n++; }
+  if (n) { click(); toast(`🛒 업그레이드 ${n}번${sv ? ` (서버 ${sv})` : ''}`); } else toast('지금은 올릴 수 있는 게 없어요');
+}
+const bottleneck = () => serverOn() && rawRate() > serverCap() * 1.001;
+function todos() {
+  const T = [];
+  const ready = S.orders.filter(o => S.D >= o.need).sort((a, b) => a.expires - b.expires)[0];
+  if (ready) T.push({ico: ready.urgent ? '🚨' : '📨', txt: `${ready.org} 과제 납품 가능 · 💰${fmt(ready.reward)}`, act: 'deliver', id: ready.id, btn: '납품'});
+  const res = S.papers.find(p => ['result', 'revwait', 'rejected'].includes(p.state));
+  if (res) T.push({ico: '📬', txt: `${THEME.venues[res.v]} 심사 결과${res.state === 'result' ? ' 도착' : res.state === 'rejected' ? ': 리젝 (다음 단계 고르기)' : ': 리비전 대기'}`, act: 'open', id: res.id, btn: '보기'});
+  const dbg = S.papers.find(p => p.state === 'debug');
+  if (dbg) T.push({ico: '🔧', txt: `교정 중 — 오류 ${Math.ceil(dbg.bugs)}개 남음`, act: 'skipDebug', id: dbg.id, btn: '바로 투고'});
+  const tv = targetVenue();
+  if (!S.cleared && S.papers.length < slots() && BAL.venues[tv].unlock <= S.stage && S.D >= planCost(tv)) T.push({ico: '📝', txt: `논문을 쓸 수 있어요 — 추천: ${(() => { const a = autoPlan(); return THEME.topics[a.t] + ' × ' + THEME.methods[a.m]; })()}`, act: 'autoPlan', btn: '추천대로', sub: '직접 고르기는 성과 탭'});
+  if (bottleneck() && S.D >= serverCost()) T.push({ico: '🗄️', txt: `서버가 밀려요! 서버 Lv.${S.server + 1}`, act: 'server', btn: '올리기', sub: '📊 ' + fmt(serverCost())});
+  const ed = emptyDesk();
+  if (serverOn() && ed >= 0 && S.cands.some(c => S.W >= hireCost(c.grade))) T.push({ico: '🧑‍🎓', txt: '빈 책상이 있어요. 신입생을 뽑아요', act: 'tab', tab: 'people', btn: '보러 가기'});
+  if (serverOn() && ed < 0 && S.desks.length < deskMax() && S.W >= deskCost()) T.push({ico: '🪑', txt: '책상을 하나 늘릴 수 있어요', act: 'addDesk', btn: '늘리기', sub: '💰 ' + fmt(deskCost())});
+  const gradable = S.students.find(canGrad);
+  if (gradable) T.push({ico: '🎓', txt: `${gradable.name} 졸업할 수 있어요`, act: 'desk', i: S.desks.findIndex(d => d.sid === gradable.id), btn: '보기'});
+  return T.slice(0, 4);
+}
+
+// ---------------------------------------------------------------- 이벤트
+let mashCount = 0, curEvent = null, pendingEvent = null; const recentEvents = [];
+let OFFSIM = false;
+// 새 이벤트: cond()가 참이면 후보, make()가 {icon,title,text,choices:[{label, fn→결과 문구}] 또는 mash:{n,label,win,lose,loseLabel}} 반환
+const stuList = () => S.students.filter(s => S.desks.some(d => d.sid === s.id && d.cell >= 0) && !isAway(s));
+const EV2 = [
+  // ---- 학생 이야기
+  {id: 'couple', w: 1, cond: () => { const L = layout(); for (const a of stuList()) for (const b of stuList()) { if (a.id >= b.id || partnerOf(a) || partnerOf(b)) continue; const da = S.desks.find(d => d.sid === a.id), db = S.desks.find(d => d.sid === b.id); if (dist(da.cell, db.cell) <= 1) return [a, b]; } return null; },
+   make: ([a, b]) => ({icon: '💕', title: '커플 탄생!', text: `${a.face} ${a.name} ❤️ ${b.face} ${b.name}<br>옆자리에서 싹튼 사랑…`, choices: [
+     {label: '축하해!', fn: () => { S.couples.push([a.id, b.id]); bump(); return '둘이 붙어 앉아 있으면 둘 다 멘탈 +3. 떨어뜨려 놓으면 보고 싶어서 멘탈 −1이에요.'; }},
+     {label: '연구실 연애 금지야…', fn: () => { a.mental = Math.max(1, a.mental - 1); b.mental = Math.max(1, b.mental - 1); return '둘이 시무룩해졌다. (멘탈 −1)'; }}]})},
+  {id: 'skip', w: 0.6, cond: () => { const c = S.couples.map(c => c.map(stu)).find(([a, b]) => a && b && !a.doze && !b.doze && !isAway(a) && !isAway(b)); return c || null; },
+   make: ([a, b]) => ({icon: '🏃', title: '둘이 사라졌다', text: `${a.name}와 ${b.name}의 자리가 비어 있다.<br>“편의점 다녀올게요~” (40분째)`, choices: [
+     {label: '못 본 척', fn: () => { a.doze = S.t + 120; b.doze = S.t + 120; return '2분 뒤에 돌아온대요. (둘 다 잠깐 쉼)'; }},
+     {label: '단톡방에 “어디야?”', fn: () => { S.D += Math.max(30, procRate(false) * 60); return '헐레벌떡 돌아와 열심히 일했다. (데이터 1분치)'; }}]})},
+  {id: 'rival', w: 1, cond: () => { const L = stuList(); for (const a of L) for (const b of L) if (a.id < b.id && a.role === b.role && Math.abs(a.lv - b.lv) <= 2 && !(a.bu > S.t)) return [a, b]; return null; },
+   make: ([a, b]) => ({icon: '🔥', title: '라이벌 의식', text: `${a.name}: “${b.name}보다 먼저 논문 낼 거야.”<br>${b.name}: “어림없지.”`, choices: [
+     {label: '선의의 경쟁 응원', fn: () => { for (const x of [a, b]) { x.bm = 1.2; x.bu = S.t + 7200; } return '두 사람 2시간 동안 생산 ×1.2!'; }}]})},
+  {id: 'slump', w: 1, cond: () => { const L = stuList().filter(x => x.mental <= 5); return L.length ? rnd(L) : null; },
+   make: a => ({icon: '😮‍💨', title: `${a.name} 슬럼프`, text: `“실험이 하나도 안 돼요… 제가 연구에 안 맞나 봐요.”`, choices: [
+     {label: '휴가 보내기 (1시간)', fn: () => { a.away = S.t + 3600; a.awayGain = 2; a.doze = 0; return `${a.name} 1시간 휴가. 돌아오면 멘탈 +2.`; }},
+     {label: `커피 사 주기 (💰 ${fmt(shopPrice('note') * 0.5)})`, fn: () => { const c = shopPrice('note') * 0.5; if (S.W < c) return '연구비가 모자라 마음만 전했다…'; S.W -= c; a.mental = Math.min(20, a.mental + 1); return '“감사합니다, 선배!” 멘탈 +1.'; }},
+     {label: '버텨! 원래 다 그래', fn: () => { a.bm = 0.8; a.bu = S.t + 3600; return '1시간 동안 생산 ×0.8… 마음이 무겁다.'; }}]})},
+  {id: 'birthday', w: 0.8, cond: () => stuList().length ? rnd(stuList()) : null,
+   make: a => ({icon: '🎂', title: `${a.name} 생일!`, text: '연구실 단톡방에 생일 알림이 떴다.', choices: [
+     {label: `케이크 사기 (💰 ${fmt(shopPrice('snack') * 0.5)})`, fn: () => { const c = shopPrice('snack') * 0.5; if (S.W < c) return '연구비가 모자라 편의점 케이크로…  경험치 +20'; S.W -= c; a.exp += 40; a.mental = Math.min(20, a.mental + 1); gainExp(0); return '모두 모여 촛불을 껐다. 경험치 +40, 멘탈 +1.'; }},
+     {label: '단톡방에 축하만', fn: () => { a.exp += 10; gainExp(0); return '“ㅊㅋㅊㅋ” 경험치 +10.'; }}]})},
+  {id: 'career', w: 0.8, cond: () => { const L = stuList().filter(x => x.lv >= 10 && !x.track); return L.length ? rnd(L) : null; },
+   make: a => ({icon: '🤔', title: '진로 고민', text: `${a.name}: “선배… 졸업하고 취업할까요, 박사까지 할까요?”`, choices: [
+     {label: '박사까지 해 보자', fn: () => { a.track = 'phd'; a.gradLv = 25; return 'Lv.25에 박사로 졸업해요. 대신 졸업생 2명 몫의 보너스!'; }},
+     {label: '취업 응원할게', fn: () => { a.track = 'job'; a.gradLv = 15; return 'Lv.15에 졸업할 수 있어요.'; }}]})},
+  {id: 'quit', w: 0.5, cond: () => { const L = stuList().filter(x => x.mental <= 3); return L.length ? rnd(L) : null; },
+   make: a => ({icon: '🚪', title: '“저 그만둘래요”', text: `${a.name}: “교수님, 저 아무래도 연구가 안 맞는 것 같아요.”`, choices: [
+     {label: `면담하기 (💰 ${fmt(shopPrice('snack'))})`, fn: () => { const c = shopPrice('snack'); if (S.W < c) { a.mental += 1; return '진심을 다해 이야기했다. 멘탈 +1.'; } S.W -= c; a.mental += 3; return '밥 먹으며 긴 이야기를 나눴다. 멘탈 +3. 남기로 했어요.'; }},
+     {label: '보내 준다', fn: () => { S.students = S.students.filter(x => x !== a); const d = S.desks.find(d => d.sid === a.id); if (d) d.sid = null; S.couples = S.couples.filter(c => !c.includes(a.id)); S.rp += 3; bump(); return `${a.name}가 떠났다. 다른 길에서도 잘하길. (🔬 +3)`; }}]})},
+  {id: 'sidea', w: 0.8, cond: () => (S.papers.some(p => p.state === 'writing') && stuList().length) ? rnd(stuList()) : null,
+   make: a => ({icon: '💡', title: '기발한 아이디어', text: `${a.name}: “이렇게 해 보면 어때요? 아까 샤워하다 생각났어요.”`, choices: [
+     {label: '좋은데? 넣어 보자', fn: () => { const p = S.papers.find(p => p.state === 'writing'); if (!p) return '…아, 지금은 쓰는 논문이 없네.'; p.N += P.req[p.v][2] * 0.15; return '쓰고 있는 논문 참신성 +15%!'; }}]})},
+  // ---- 외부·경쟁 연구실
+  {id: 'gpu', w: 0.8, cond: () => S.stage >= 1,
+   make: () => ({icon: '🤝', title: '옆 연구실의 부탁', text: '“GPU 좀 한 시간만 빌려 줄 수 있어? 마감이라…”', choices: [
+     {label: '빌려 준다', fn: () => { S.buffs.push({k: 'gen', m: 0.8, until: S.t + 3600, src: 'gpu'}); S.W += BAL.orders.reward[S.stage] * 0.6; S.rp += 3; return '1시간 생산 ×0.8. 대신 사례금과 🔬 +3 (나중에 논문에 감사의 글도).'; }},
+     {label: '미안, 우리도 마감이야', fn: () => '“그래, 이해해…” 조금 서운해 보인다.'}]})},
+  {id: 'bigproj', w: 0.6, cond: () => S.stage >= 2 && S.orders.length < BAL.orders.max,
+   make: () => ({icon: '🏢', title: '대형 산학 과제 제안', text: '“○○그룹 신사업 TF입니다. 크게 한번 같이 하시죠.”', choices: [
+     {label: '수락 (마감 3시간)', fn: () => { const pr = Math.max(procRate(false), 1); S.orders.push({id: ++S.oid, org: '○○그룹 TF', title: '신사업 AI 전략(?)', need: round2(pr * 900), reward: round2(BAL.orders.reward[S.stage] * 4), cit: S.stage * 3, urgent: false, expires: S.t + 3 * 3600}); return '큰 과제가 성과 탭에 들어왔어요. 데이터 15분치 · 보상 4배!'; }},
+     {label: '정중히 거절', fn: () => '“다음에 꼭 같이 하시죠.”'}]})},
+  {id: 'interview', w: 0.7, cond: () => S.hof.length > 0,
+   make: () => ({icon: '🎙️', title: '기자 인터뷰', text: `명예의 전당 논문 「${S.hof[S.hof.length - 1].title}」을 보고 연락이 왔다.`, choices: [
+     {label: '인터뷰한다', fn: () => { const c = 30 * (S.stage + 1) ** 2; S.cit += c; S.W += BAL.orders.reward[S.stage]; return `기사가 나갔다! 인용 +${fmt(c)}, 연구비도 조금.`; }},
+     {label: '부끄러워서 거절', fn: () => '“다음에 꼭이요!”'}]})},
+  {id: 'audit', w: 0.6, cond: () => S.stage >= 2,
+   make: () => ({icon: '🧾', title: '연구비 감사', text: '“지난 학기 영수증을 모두 제출해 주세요. 오늘까지.”', mash: {n: 15, label: '영수증 정리', win: () => { S.rp += 3; return '완벽하게 정리했다! 행정실이 감탄했다. (🔬 +3)'; }, loseLabel: '나중에 할게요…', lose: () => { const c = S.W * 0.1; S.W -= c; return `영수증 몇 장이 빠졌다… 연구비 −${fmt(c)}`; }}})},
+  {id: 'sports', w: 0.6, cond: () => stuList().length >= 3,
+   make: () => ({icon: '⚽', title: '학과 체육대회', text: '“우리 연구실도 한 팀 나와야 한대요!”', choices: [
+     {label: '다 같이 참가 (30분)', fn: () => { for (const x of stuList()) { x.away = S.t + 1800; x.awayGain = 1; x.doze = 0; } S.buffs.push({k: 'gen', m: 1.3, until: S.t + 5400, src: 'sports'}); return '학생들이 30분 자리를 비워요. 돌아오면 멘탈 +1, 1시간 반 동안 생산 ×1.3!'; }},
+     {label: '불참 (실험해야 해서)', fn: () => '교수님이 살짝 서운해하신다.'}]})},
+  {id: 'rivallab', w: 0.6, cond: () => S.stage >= 2,
+   make: () => ({icon: '📰', title: '경쟁 연구실 소식', text: `옆 학교 연구실이 「${THEME.topics[trendTopic()]}」로 탑저널에 냈다고…`, choices: [
+     {label: '자극받아 밤샘', fn: () => { S.buffs.push({k: 'gen', m: 1.5, until: S.t + 1800, src: 'rival'}); return '30분 동안 생산 ×1.5!'; }},
+     {label: '축하 메일 보내기', fn: () => { S.rp += 2; return '“축하드립니다. 저희도 곧…” (🔬 +2)'; }}]})},
+];
+const EVN = {couple: '💕 커플', skip: '🏃 땡땡이', rival: '🔥 라이벌', slump: '😮‍💨 슬럼프', birthday: '🎂 생일', career: '🤔 진로', quit: '🚪 그만둘래요', sidea: '💡 아이디어', gpu: '🤝 GPU 대여', bigproj: '🏢 대형 과제', interview: '🎙️ 인터뷰', audit: '🧾 감사', sports: '⚽ 체육대회', rivallab: '📰 경쟁 연구실'};
+function fireEvent() {
+  S.nextEvent = S.evT + rr(...BAL.eventGap); S.evCount++;
+  const cands = [];
+  for (const e of THEME.events) if (!recentEvents.includes(e.id) && (!e.minStudents || S.students.length >= e.minStudents)) cands.push({w: e.id === 'deadline' && S.t < S.deadlineUntil ? 3 : 1, old: e});
+  for (const e of EV2) if (!recentEvents.includes(e.id)) { const c = e.cond(); if (c) cands.push({w: e.w * 1.2, nu: e, c}); }
+  if (!cands.length) { recentEvents.length = 0; return; }
+  let r = Math.random() * sum(cands.map(c => c.w)), pick = cands[0];
+  for (const c of cands) { r -= c.w; if (r <= 0) { pick = c; break; } }
+  mashCount = 0;
+  if (pick.nu) { recentEvents.push(pick.nu.id); if (recentEvents.length > 4) recentEvents.shift(); showEv2(pick.nu.make(pick.c)); return; }
+  curEvent = pick.old;
+  recentEvents.push(curEvent.id); if (recentEvents.length > 4) recentEvents.shift();
+  const e = curEvent;
+  if (e.mash) sheet(`<div class="big">${e.icon}</div><h2>${e.title}</h2><p>${e.text}</p><button class="btn" data-act="mash">${e.mashLabel} (0/${e.mash}) — 연타!</button><button class="btn ghost" data-act="evLose">${e.loseLabel}</button>`);
+  else sheet(`<div class="big">${e.icon}</div><h2>${e.title}</h2><p>${e.text}</p>` + e.choices.map((c, i) => `<button class="btn ${i ? 'ghost' : ''}" data-act="evChoice" data-i="${i}">${c.label}</button>`).join(''));
+}
+let ev2 = null;
+function showEv2(e) {
+  ev2 = e; mashCount = 0;
+  if (e.mash) sheet(`<div class="big">${e.icon}</div><h2>${e.title}</h2><p>${e.text}</p><button class="btn" data-act="mash2">${e.mash.label} (0/${e.mash.n}) — 연타!</button><button class="btn ghost" data-act="ev2lose">${e.mash.loseLabel}</button>`);
+  else sheet(`<div class="big">${e.icon}</div><h2>${e.title}</h2><p>${e.text}</p>` + e.choices.map((c, i) => `<button class="btn ${i ? 'ghost' : ''}" data-act="ev2" data-i="${i}">${c.label}</button>`).join(''));
+}
+function ev2Result(msg) { sheet(`<div class="big">${ev2.icon}</div><p>${msg}</p><button class="btn" data-act="close">확인</button>`); bump(); save(); }
+// ---- 논문 쓰는 중 이벤트 (게임발전국식)
+function paperEvent(p) {
+  if (modalBusy()) { queue(() => paperEvent2(p)); return; }
+  paperEvent2(p);
+}
+function paperEvent2(p) {
+  if (!S.papers.includes(p) || p.state !== 'writing') return;
+  const r = P.req[p.v], helper = rnd(stuList().filter(x => x.role === 'exp')) || null, hn = helper ? helper.name : '나';
+  const list = [
+    {icon: '🧪', title: '실험 하나 더?', text: `${helper ? helper.face + ' ' + hn : '🙂 (혼잣말)'}: “실험 하나 더 돌려 볼까요? 결과가 더 좋아질 것 같아요.”`, choices: [
+      {label: `부탁해 (📊 ${fmt(p.cost * 0.1)})`, fn: () => { if (S.D < p.cost * 0.1) return '데이터가 모자라 다음 기회에…'; S.D -= p.cost * 0.1; const ok = Math.random() < 0.55 + (helper ? helper.code : 3) / 40; if (ok) { p.E += r[0] * 0.3; return '대성공! 실험 점수 +30%.'; } p.bugs += 8; return '돌려 보니 버그가… 🐛 오류 +8.'; }},
+      {label: '괜찮아, 이대로 가자', fn: () => '“넵!”'}]},
+    {icon: '📰', title: 'arXiv 충격', text: `거의 같은 주제의 논문이 방금 arXiv에 올라왔다!<br>「${p.title}」`, choices: [
+      {label: '차별점을 강조해 다시 쓴다', fn: () => { p.N *= 0.9; p.W += r[1] * 0.2; return '참신성 −10%, 대신 글 +20%. 리뷰어가 차이를 알아보길…'; }},
+      {label: '그냥 간다', fn: () => { p.N *= 0.8; return '참신성 −20%… 먼저 낸 사람이 이기는 세계.'; }}]},
+    {icon: '🧑‍🏫', title: '제목 회의', text: '교수님: “제목이 좀 심심한데? 이렇게 바꾸자.”', choices: [
+      {label: '네… (제목 변경)', fn: () => { p.title = p.title.split(':')[0] + ': ' + rnd(THEME.catches); p.N += r[2] * 0.1; return `새 제목 「${p.title}」. 참신성 +10%.`; }}]},
+    {icon: '⚡', title: '정전!', text: '저장 안 한 원고가 날아가기 직전! 빨리 복구해야 해!', mash: {n: 15, label: '복구', win: () => '휴, 자동 저장이 살렸다!', loseLabel: '포기…', lose: () => { p.W *= 0.85; return '두 시간 쓴 부분이 날아갔다… 글 −15%.'; }}},
+    {icon: '🤝', title: '공동저자 제안', text: '옆 연구실: “저희 데이터 쓰시고 저희도 이름 넣어 주세요.”', choices: [
+      {label: '좋아요, 같이 해요', fn: () => { p.E += r[0] * 0.2; p.coauth = 1; return '실험 +20%! (저자 목록이 길어졌다)'; }},
+      {label: '저희끼리 할게요', fn: () => '“그럼 다음에…”'}]},
+    {icon: '🎨', title: '그림 다시 그리기', text: '교수님: “그림 1이 좀… 다시 그려 볼래?”', choices: [
+      {label: '밤새 다시 그린다', fn: () => { p.W += r[1] * 0.25; S.nextDoze = Math.min(S.nextDoze, S.evT + 20); return '글 점수 +25%. 대신 다들 졸려 보인다.'; }},
+      {label: '이대로 괜찮을 거예요', fn: () => '교수님: “음… 그래, 그럼.”'}]},
+  ];
+  showEv2(rnd(list));
+}
+// ---- 매일 첫 접속: 교수님 한마디 + 출석 '연구 노트' 7일, 달력 이벤트
+const QUOTES = ['오늘도 실험 화이팅. 결과는 내일까지.', '논문은 쓰는 게 아니라 고치는 거야.', '주말에 잠깐 미팅 가능하지?', '그 그래프 y축 로그로 바꿔 봐.', '좋은 연구는 좋은 질문에서 시작한다.', '나 때는 GPU도 없었어.', '리뷰어 2는 원래 그래. 신경 쓰지 마.', '오늘은 일찍 들어가. …라고 말하고 싶다.'];
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+function dailyCheck() {
+  if (S.stage < 1) return;
+  const k = today(); if (S.dayKey === k) return;
+  const y = new Date(Date.now() - 86400000), yk = y.getFullYear() + '-' + (y.getMonth() + 1) + '-' + y.getDate();
+  S.streak = S.dayKey === yk ? S.streak % 7 + 1 : 1; S.dayKey = k;
+  const day = S.streak, pr = Math.max(procRate(false), 1);
+  const rewards = [null, ['📊 데이터 10분치', () => { S.D += pr * 600; }], ['💰 연구비', () => { S.W += BAL.orders.reward[S.stage]; }], ['🔬 연구 포인트 +5', () => { S.rp += 5; }],
+    ['⚡ 에너지 드링크', () => { S.inv.energy = (S.inv.energy || 0) + 1; }], ['📊 데이터 30분치', () => { S.D += pr * 1800; }], ['📝 영어 교정권', () => { S.inv.proof = (S.inv.proof || 0) + 1; }],
+    ['🎫 등록비 지원 + 🔬 10', () => { S.inv.fee = (S.inv.fee || 0) + 1; S.rp += 10; }]];
+  rewards[day][1]();
+  queue(() => sheet(`<div class="big">🧑‍🏫</div><h2>오늘의 교수님 한마디</h2><p>“${rnd(QUOTES)}”</p>
+    <div class="reward">📓 연구 노트 ${day}/7일째 출석<br>${rewards[day][0]}${day === 7 ? '<br>🎉 일주일 개근!' : ''}</div>
+    <div class="muted">${[1, 2, 3, 4, 5, 6, 7].map(i => i <= day ? '✅' : '⬜').join(' ')}</div><button class="btn" data-act="close">오늘도 화이팅</button>`));
+  seasonCheck();
+}
+const SEASONS = [
+  {id: 'xmas', on: (m, d) => m === 12 && d >= 20, icon: '🎄', title: '연말 송년회', text: '산타 모자를 쓴 교수님이 선물을 나눠 주신다.', fx: () => { S.buffs.push({k: 'gen', m: 2, until: S.t + 1800, src: 'xmas'}); const k = rnd(Object.keys(THEME.shop)); S.inv[k] = (S.inv[k] || 0) + 1; return `30분 동안 생산 ×2 + 선물 ${THEME.shop[k][1]} ${THEME.shop[k][0]}!`; }},
+  {id: 'newyear', on: (m, d) => m === 1 && d <= 7, icon: '🎍', title: '새해 다짐', text: '“올해는 꼭 졸업한다!” 모두 다짐했다.', fx: () => { for (const x of S.students) x.mental = Math.min(20, x.mental + 1); S.rp += 5; return '학생 모두 멘탈 +1, 🔬 +5.'; }},
+  {id: 'holiday', on: (m, d) => m === 2 || m === 9 || m === 10, icon: '🧧', title: '명절', text: '친척들: “그래서 언제 졸업하니?” “요즘 뭐 연구해?”', fx: () => { const p = S.papers.find(p => p.state === 'writing'); if (p) p.N += P.req[p.v][2] * 0.1; S.D += Math.max(procRate(false), 1) * 900; return '30분 동안 연구 설명을 했다. 데이터 15분치' + (p ? ' + 쓰는 논문 참신성 +10%' : '') + '.'; }},
+  {id: 'spring', on: (m, d) => m === 3, icon: '🌸', title: '신학기', text: '새 학기! 대학원 지원자가 몰려왔어요.', fx: () => { newCands(); for (const c of S.cands) { c.code += 2; c.write += 2; } return '지원자 3명이 새로 왔어요. 이번엔 다들 능력치 +2!'; }},
+  {id: 'summer', on: (m, d) => m === 7 || m === 8, icon: '🏖️', title: '여름방학', text: '학생들: “방학인데… 다 같이 MT 가면 안 돼요?”', fx: () => { for (const x of S.students) { x.exp += 50; } gainExp(0); return '1박 2일 MT! 학생 모두 경험치 +50.'; }},
+  {id: 'deadline', on: (m, d) => (m === 1 || m === 5 || m === 9) && d <= 15, icon: '⏰', title: '학회 마감 시즌', text: '주요 학회 마감이 다가온다. 연구실이 불타오른다!', fx: () => { S.deadlineUntil = S.t + 6 * 3600; return '6시간 동안 논문 점수 +15%! (마감 D-1 이벤트도 자주 나와요)'; }},
+  {id: 'autumn', on: (m, d) => m === 11, icon: '🍂', title: '가을 학회 시즌', text: '가을 학회가 한창이다. 산학 과제 문의도 늘었다.', fx: () => { if (S.orders.length < BAL.orders.max) newOrder(true); S.rp += 3; return '과제 의뢰 1건 추가 + 🔬 +3.'; }},
+];
+function seasonCheck(force) {
+  const d = new Date(), m = d.getMonth() + 1, dd = d.getDate(), y = d.getFullYear();
+  for (const se of SEASONS) {
+    const key = se.id + '-' + y + (se.id === 'holiday' ? '-' + m : '');
+    if ((force === se.id) || (!force && se.on(m, dd) && !S.seasonDone[key])) {
+      if (!force) S.seasonDone[key] = 1;
+      queue(() => { const msg = se.fx(); sheet(`<div class="big">${se.icon}</div><h2>${se.title}</h2><p>${se.text}</p><div class="reward">${msg}</div><button class="btn" data-act="close">좋아요</button>`); });
+    }
+  }
+}
+function effAmount(eff) {
+  if (eff.D) return {D: Math.max(30, procRate(false) * eff.D)};
+  if (eff.W) return {W: Math.max(20 * 1.5 ** S.stage, wPerSec() * eff.W, BAL.orders.reward[S.stage] * 0.5)};
+  return {};
+}
+function applyEff(eff) {
+  if (eff.buff) { const [k, m, s] = eff.buff; const src = curEvent ? curEvent.id : ''; S.buffs = S.buffs.filter(b => !(src && b.src === src)); S.buffs.push({k, m, until: S.t + s, src}); }
+  if (eff.freeLv) S.desks[0].lv = Math.min(equipMax(), S.desks[0].lv + eff.freeLv);
+  if (eff.wakeAll) for (const s of S.students) s.doze = 0;
+}
+function eventReward(eff, msg) {
+  const amt = effAmount(eff); applyEff(eff);
+  if (!amt.D && !amt.W) { sheet(`<div class="big">${curEvent.icon}</div><p>${msg}</p><button class="btn" data-act="close">확인</button>`); return; }
+  pendingEvent = amt;
+  sheet(`<div class="big">${curEvent.icon}</div><p>${msg}</p><div class="reward">${amt.D ? `📊 데이터 +${fmt(amt.D)}` : `💰 연구비 +${fmt(amt.W)}`}</div><button class="btn" data-act="evTake">받기</button>` +
+    (adsOn() ? `<button class="btn ad" data-act="evTake2">📺 광고 보고 2배 받기 <small>오늘 ${adLeft('event')}회 남음</small></button>` : ''));
+}
+function takeEvent(mult) { if (!pendingEvent) return; S.D += (pendingEvent.D || 0) * mult; S.W += (pendingEvent.W || 0) * mult; pendingEvent = null; closeModal(); }
+
+// ---------------------------------------------------------------- 시트
+const mq = []; let modalOpen = false, pendingOffline = null;
+const modalBusy = () => modalOpen || mq.length > 0 || adPlaying || !$('exitBox').classList.contains('hidden');
+function queue(fn) { if (modalOpen) mq.push(fn); else fn(); }
+function sheet(html) { $('sheet').innerHTML = html; $('modal').classList.remove('hidden'); modalOpen = true; }
+function closeModal() { $('modal').classList.add('hidden'); $('modal').classList.remove('title'); modalOpen = false; const n = mq.shift(); if (n) n(); }
+function offlineSheet(o) {
+  pendingOffline = o;
+  sheet(`<div class="big">🌙</div><h2>다녀오셨어요!</h2><p>자리 비운 ${fmtT(o.secs)} 동안 연구실이 돌아갔어요.${o.secs > o.capped ? `<br><small class="muted">(보상은 최대 ${fmtT(o.capped)}까지)</small>` : ''}</p>
+    <div class="reward">📊 데이터 +${fmt(o.dGain)}<br>💰 연구비 +${fmt(o.wGain)}<br>📈 인용 +${fmt(o.cGain)}${o.arrived ? `<br>📬 심사 결과 ${o.arrived}건 도착!` : ''}${o.newO ? `<br>📨 과제 의뢰 ${o.newO}건 도착!` : ''}${S.students.length ? `<br>🧑‍🎓 학생들도 경험치를 쌓았어요` : ''}</div>
+    <button class="btn" data-act="offTake">받기</button>` + (adsOn() && o.dGain > 0 ? `<button class="btn ad" data-act="offTake2">📺 광고 보고 2배 받기 <small>오늘 ${adLeft('offline')}회 남음</small></button>` : ''));
+}
+function takeOffline(mult) { const o = pendingOffline; if (!o) return; S.D += o.dGain * mult; S.W += o.wGain * mult; pendingOffline = null; closeModal(); save(); }
+function promoSheet(st) {
+  const s = THEME.stages[st], last = st === 5; if (last) S.cleared = true;
+  const notes = [];
+  if (THEME.unlockNote[st]) notes.push('새로 열림: ' + THEME.unlockNote[st]);
+  notes.push(`🚚 연구실 이사! ${GW}×${BAL.grid.rows[st]}칸`);
+  if (BAL.desks.max[st] > BAL.desks.max[st - 1]) notes.push(`책상 최대 ${BAL.desks.max[st]}개`);
+  notes.push(`장비 최대 Lv.${BAL.equip.maxLv[st]}`);
+  sheet(`<div class="big">${s.face}</div><h2>🎉 ${s.name}!</h2><p>${THEME.promo[st]}</p>
+    <div class="reward">연구실 생산 ×1.5<br>${notes.join('<br>')}${last ? '<br><b>시즌 1 클리어!</b> ‘내 연구실 열기’는 다음 버전에서.' : ''}</div>
+    <button class="btn" data-act="share" data-st="${st}">공유하기</button><button class="btn ghost" data-act="close">계속</button>`);
+  save();
+}
+function fxText(i) {
+  const f = layout().fx[i], s = deskStu(S.desks[i]), t = [];
+  if (f.win) t.push('🪟 창가 멘탈 +2');
+  if (f.plants) t.push(`🪴 화분 멘탈 +${f.plants}`);
+  if (f.racks) t.push(`🗄️ 서버 옆 생산 +${Math.min(2, f.racks) * 10}% · 멘탈 −${f.racks}`);
+  if (f.coffee) t.push('☕ 커피머신 옆 졸음 ½');
+  if (f.ideaW > 1) t.push('📝 화이트보드 옆 💡 자주');
+  if (f.write && s && s.role === 'write') t.push(`📚 글쓰기 +${f.write}`);
+  if (f.wake < BAL.doze.auto) t.push('🛋️ 소파 옆 금방 깸');
+  if (f.study && s) t.push(s.role === 'exp' ? '🧑‍🤝‍🧑 스터디 생산 +10%' : '🧑‍🤝‍🧑 스터디 글쓰기 +1');
+  if (f.night) t.push('🌃 밤샘 스팟 +20%');
+  if (f.heal) t.push('🌿 힐링 스팟: 안 졺');
+  if (f.zen) t.push('🧘 명상 스팟 멘탈 +3');
+  if (f.love === true) t.push('❤️ 옆자리 연인 멘탈 +3'); else if (f.love === false) t.push('💔 연인과 떨어져 멘탈 −1');
+  return t.length ? t.join(' · ') : '주변 효과 없음 — 🛠 배치하기로 물건을 붙여 보세요';
+}
+function deskSheet(i) {
+  const d = S.desks[i]; if (!d) return;
+  const [en, ei] = equipName(d.lv), max = equipMax();
+  const up = n => { let c = 0, lv = d.lv, k = 0; while (k < n && lv < max) { c += equipCost(lv); lv++; k++; } return {c, k}; };
+  const u1 = up(1), u10 = up(10);
+  let who = '';
+  if (d.sid === 'me') who = `<div class="big">${THEME.stages[S.stage].face}</div><h2>${S.name} (나)</h2><p>${THEME.stages[S.stage].name} · 코딩 ${stars(3)}</p>`;
+  else if (d.sid) {
+    const s = stu(d.sid), t = trait(s), f = layout().fx[i];
+    who = `<div class="big">${s.face}</div><h2>${s.name} <span class="tag">${THEME.grades[s.grade]}</span></h2>
+      <p>${t.ico} <b>${t.name}</b> — ${t.desc}</p>
+      <div class="reward left"><span class="stat">코딩 <span class="stars">${stars(s.code)}</span> ${s.code}</span> <span class="stat">글쓰기 <span class="stars">${stars(s.write)}</span> ${s.write}${f.write && s.role === 'write' ? `+${f.write}` : ''}</span> <span class="stat">멘탈 <span class="stars">${stars(s.mental)}</span> ${s.mental}${f.mental ? (f.mental > 0 ? '+' : '') + f.mental : ''}</span><br>
+      Lv.${s.lv} · 경험치 ${Math.floor(s.exp)}/${expNeed(s)} <small class="muted">(일하면 오르고, 레벨마다 역할 능력치 +1)</small>${s.track ? `<br>진로: ${s.track === 'phd' ? '🎓 박사까지 (Lv.25 졸업, 졸업생 2명 몫)' : '💼 취업 (Lv.15 졸업)'}` : ''}${partnerOf(s) ? `<br>❤️ ${partnerOf(s).name}와 커플` : ''}${isAway(s) ? '<br>🏖️ 휴가 중' : ''}${s.doze ? '<br>💤 졸고 있어요' : ''}</div>
+      <div class="seg"><button data-act="role" data-sid="${s.id}" data-r="exp" class="${s.role === 'exp' ? 'on' : ''}">🧪 실험</button><button data-act="role" data-sid="${s.id}" data-r="write" class="${s.role === 'write' ? 'on' : ''}" ${S.stage < 2 ? 'disabled' : ''}>✍️ 집필${S.stage < 2 ? ' 🔒박사' : ''}</button></div>
+      <div class="muted">${THEME.roles[s.role][1]}</div>
+      <div class="row"><button class="btn ghost" data-act="train" data-sid="${s.id}" ${S.W >= trainCost(s) ? '' : 'disabled'}>세미나 보내기 (경험치 +${BAL.student.trainExp})<small>💰 ${fmt(trainCost(s))}</small></button>
+      ${canGrad(s) ? `<button class="btn" data-act="grad" data-sid="${s.id}" style="background:var(--ok)">🎓 졸업시키기</button>` : ''}</div>
+      ${!canGrad(s) && S.stage >= BAL.student.gradStage ? `<div class="muted">Lv.${s.gradLv || BAL.student.gradLv}이 되면 졸업할 수 있어요</div>` : ''}`;
+  } else who = `<div class="big">🪑</div><h2>빈 책상</h2><p>‘사람’ 탭에서 신입생을 뽑으면 여기 앉아요.</p>`;
+  sheet(`${who}<div class="reward left"><b>이 자리</b> <small class="muted">${fxText(i)}</small></div>
+    <div class="reward left">${ei} <b>${en}</b> Lv.${d.lv} <span class="muted">(최대 ${max})</span><br>이 책상 생산 +${fmt(deskRate(i, false))}/초${deskStu(d) && deskStu(d).role === 'write' ? ' <small class="muted">(집필 중이라 장비가 쉬어요)</small>' : ''}
+    <br><small class="muted">Lv.${(Math.floor(d.lv / BAL.equip.tier) + 1) * BAL.equip.tier}이 되면 장비가 바뀌고 ×${BAL.equip.tierMult}</small></div>
+    <div class="row"><button class="btn" data-act="eq" data-i="${i}" data-n="1" ${u1.k && S.D >= u1.c ? '' : 'disabled'}>+1 Lv<small>📊 ${fmt(u1.c)}</small></button>
+    <button class="btn" data-act="eq" data-i="${i}" data-n="10" ${u10.k && S.D >= u10.c ? '' : 'disabled'}>+${u10.k} Lv<small>📊 ${fmt(u10.c)}</small></button></div>
+    <button class="btn ghost" data-act="close">닫기</button>`);
+}
+function itemSheet(k) {
+  const it = S.items[k], [n, ico, desc] = THEME.items[it.t];
+  const sp = Object.entries(layout().spots).filter(([id, cells]) => cells.includes(it.cell)).map(([id]) => THEME.spots[id][0] + ' ' + THEME.spots[id][1]);
+  sheet(`<div class="big">${ico}</div><h2>${n}</h2><p>${desc}</p>${sp.length ? `<div class="reward">✨ ${sp.join(' · ')}에 들어가 있어요</div>` : ''}
+    <button class="btn" data-act="placeOn">🛠 배치하기로 옮기기</button><button class="btn ghost" data-act="close">닫기</button>`);
+}
+function spotBook() {
+  const n = Object.keys(S.found).length, on = layout().spots;
+  sheet(`<div class="big">📖</div><h2>스팟 도감 (${n}/${SPOTS.length})</h2><p>물건 3개를 서로 2칸 안에 두면 '스팟'이 생기고, 주변 8칸이 강해져요.</p>
+    <div class="reward left">${SPOTS.map(sp => { const t = THEME.spots[sp.id], f = S.found[sp.id];
+      const show = f || !sp.hidden;
+      return `<div style="padding:4px 0">${show ? t[0] : '❔'} <b>${show ? t[1] : '숨은 스팟'}</b>${on[sp.id] ? ' <span class="tag" style="color:var(--ok)">지금 켜짐</span>' : ''}<br><small class="muted">${show ? t[2] + ' → ' + t[3] : '조합 비밀 · 힌트: ' + t[4]}</small></div>`; }).join('')}</div>
+    <button class="btn" data-act="close">닫기</button>`);
+}
+let adPlaying = false;
+function watchAd(kind, done, fallback) {
+  if (adLeft(kind) <= 0) { toast('오늘은 더 볼 수 있는 광고가 없어요'); if (fallback) fallback(); return; }
+  if (!PF.adReady()) { toast('광고를 불러오는 중이에요. 잠시 뒤에 다시 눌러 주세요'); if (fallback) fallback(); return; }
+  adPlaying = true; soundPause();
+  let got = false;
+  PF.showReward(() => { if (got) return; got = true; S.ads[kind] = (S.ads[kind] || 0) + 1; done(); save(true); },
+    () => { adPlaying = false; lastFrame = performance.now(); soundResume(); lastSig = ''; if (!got && fallback) fallback(); });
+}
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.tm); toast.tm = setTimeout(() => t.classList.remove('on'), 1800); }
+let actx = null;
+function soundPause() { try { if (actx && actx.state === 'running') actx.suspend(); } catch (e) {} }
+function soundResume() { try { if (actx && S.sound && !adPlaying) actx.resume(); } catch (e) {} }
+function click() {
+  if (!S.sound) return;
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain();
+    o.frequency.value = 900 + Math.random() * 200; o.type = 'square'; g.gain.setValueAtTime(0.04, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.05);
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.06); } catch (e) {}
+}
+
+// ---------------------------------------------------------------- 화면
+let tab = 'lab', lastSig = '', placeMode = false, selKey = null;
+function reqText() {
+  if (S.stage >= 5) return {txt: '시즌 1 클리어! 🎉', cur: 1, need: 1};
+  const [v, n] = BAL.stages[S.stage + 1].req;
+  return {txt: `다음 승진 <b>${THEME.stages[S.stage + 1].name}</b> — ${THEME.venues[v]} 게재 ${S.published[v]}/${n}편`, cur: S.published[v], need: n};
+}
+function hint() {
+  if (placeMode) return '';
+  if (S.D < 10 && S.desks[0].lv === 1 && !S.papers.length && !S.published[0]) return `👆 ‘${THEME.tap}’을 눌러 데이터를 모아요`;
+  if (S.desks[0].lv < 3 && !S.published[0]) return '⬆ 연구실의 내 책상을 눌러 장비를 올려 보세요 (생산이 늘어요)';
+  if (S.published[0] === 0 && S.papers.length === 0) return S.D >= paperCost(0) ? '📝 첫 논문을 써 볼까요? 아래 ‘추천 할 일’을 눌러요' : `📝 데이터 ${fmt(paperCost(0))}을 모으면 첫 논문을 쓸 수 있어요`;
+  if (S.stage === 0 && S.papers.length) return '⏳ 심사를 기다리는 동안 장비를 올려요';
+  if (S.stage === 1 && S.students.length === 0) return '🧑‍🎓 ‘사람’ 탭에서 첫 신입생을 뽑아요';
+  if (S.stage >= 1 && S.items.length >= 2 && !S.usedPlace) return '🛠 ‘배치하기’로 물건을 옮겨 보세요 — 붙여 놓으면 보너스!';
+  if (S.stage === 2 && writers().length === 0 && S.students.length >= 2) return '✍️ 글 잘 쓰는 학생을 눌러 ‘집필’로 바꿔 보세요';
+  return '';
+}
+function paperCard(p) {
+  const name = THEME.venues[p.v], r = P.req[p.v];
+  const bars = ['N', 'E', 'W'].map(a => `<div class="pa ${a}"><span>${PA[a][0]}</span><div class="bar"><i data-pid="${p.id}" data-pa="${a}"></i></div><small data-pid="${p.id}" data-pt="${a}"></small></div>`).join('');
+  const head = `<b>${name}</b> <span class="muted">「${p.title}」</span>`;
+  if (p.state === 'writing' || p.state === 'revising') {
+    const label = p.state === 'writing' ? `✍️ 집필 중 (${({normal: '보통', careful: '꼼꼼히', fast: '빨리', research: '연구 위주'})[p.dir]})` : `📝 리비전 ${p.rev}회차 보강 중`;
+    return `<div class="paper">${head}<br><span class="muted">${label} · <span data-end="${p.end}"></span> · 🐛 <span data-pid="${p.id}" data-bug="1"></span></span>${bars}</div>`;
+  }
+  if (p.state === 'debug') return `<div class="paper">${head}<div class="row"><div class="grow"><span class="muted">🔧 교정 중 — 오류 <b data-pid="${p.id}" data-bug="1"></b>개 남음 (잡을 때마다 🔬)</span></div><button class="btn ghost sm" data-act="skipDebug" data-id="${p.id}">바로 투고</button></div>${bars}</div>`;
+  if (p.state === 'review') return `<div class="paper">${head}<div class="row"><div class="grow"><span class="muted">${p.rev ? '🔁 재심사 중' : '🔎 심사 중'} · <span data-end="${p.end}"></span></span><div class="bar"><i data-s="${p.start}" data-e="${p.end}"></i></div></div>
+    ${adsOn() ? `<button class="btn ad sm" data-act="fast" data-id="${p.id}">📺 빠른 심사</button>` : ''}</div></div>`;
+  if (p.state === 'result') return `<div class="paper ready">${head}<div class="row"><div class="grow"><span class="muted">📬 심사 결과 도착!</span></div><button class="btn" data-act="open" data-id="${p.id}">결과 보기</button></div></div>`;
+  if (p.state === 'revwait') return `<div class="paper rev">${head}<div class="row"><div class="grow"><span class="muted">📝 ${decName(p.dec)} (${p.total}점) — 리비전 대기</span></div><button class="btn" data-act="open" data-id="${p.id}">보기</button></div></div>`;
+  return `<div class="paper urgent">${head}<div class="row"><div class="grow"><span class="muted">😢 리젝 (${p.total}점) — 다음 단계를 골라요</span></div><button class="btn" data-act="open" data-id="${p.id}">보기</button></div></div>`;
+}
+function orderCard(o) {
+  const ok = S.D >= o.need;
+  return `<div class="paper ${o.urgent ? 'urgent' : ''}"><div class="row"><div class="grow"><b>${o.urgent ? '🚨 ' : '🏢 '}${o.org}</b> <span class="muted">「${o.title}」</span><br>
+    <span class="muted">필요 📊${fmt(o.need)} · 보상 💰${fmt(o.reward)}${o.cit ? ` · 📈+${o.cit}` : ''} · 마감 <span data-end="${o.expires}"></span></span></div>
+    <button class="btn sm" data-act="deliver" data-id="${o.id}" ${ok ? '' : 'disabled'}>${ok ? '납품' : '모으는 중'}</button></div></div>`;
+}
+const papersSig = () => S.papers.map(p => p.id + p.state).join(',');
+const ordersSig = () => S.orders.map(o => o.id + (S.D >= o.need ? 'y' : 'n')).join(',');
+
+function roomHTML() {
+  const L = layout(), selObj = selKey ? objRef(selKey) : null, selCell = selObj ? selObj.cell : -2;
+  const rngCells = new Set();
+  if (selObj && selKey[0] === 'i' && selObj.cell >= 0) for (let c = 0; c < cellsN(); c++) if (dist(c, selObj.cell) === 1) rngCells.add(c);
+  const spotAt = {}; for (const id in L.spots) for (const c of L.spots[id]) (spotAt[c] = spotAt[c] || []).push(id);
+  let h = '';
+  for (let c = 0; c < cellsN(); c++) {
+    const o = L.map[c], cls = ['cell'];
+    if (rc(c)[0] === 0) cls.push('win');
+    if (placeMode) cls.push('place');
+    if (c === selCell) cls.push('sel'); else if (rngCells.has(c)) cls.push('rng');
+    if (spotAt[c]) cls.push('sp');
+    const spb = spotAt[c] ? `<span class="spb">${spotAt[c].map(id => THEME.spots[id][0]).join('')}</span>` : '';
+    if (!o) { h += `<div class="${cls.join(' ')}" data-act="cell" data-c="${c}">${placeMode ? '<span class="muted" style="margin:auto">＋</span>' : ''}</div>`; continue; }
+    if (o.kind === 'item') {
+      cls.push('it'); const [n, ico] = THEME.items[o.t];
+      h += `<div class="${cls.join(' ')}" data-act="cell" data-c="${c}">${spb}<div class="obj">${ico}</div><div class="cap" style="font-weight:600;color:var(--sub)">${n}</div></div>`;
+      continue;
+    }
+    const d = S.desks[o.i], s = deskStu(d), [, ei] = equipName(d.lv), bub = (!placeMode && S.idea && S.idea.desk === o.i) ? `<button class="bub" data-act="idea">💡</button>` : '';
+    let face, wcls = '', cap, rt;
+    if (d.sid === 'me') { face = THEME.stages[S.stage].face; wcls = 'work'; cap = '나'; rt = '+' + fmt(deskRate(o.i)); }
+    else if (s && isAway(s)) { face = '🏖️'; cap = s.name; rt = '휴가 중'; }
+    else if (s) { face = s.face; wcls = s.doze ? 'zz' : s.role === 'write' ? 'wr' : 'work'; cap = s.name + (partnerOf(s) ? ' ❤️' : '') + (stuBuff(s) > 1 ? ' 🔥' : ''); rt = s.doze ? '눌러 깨우기' : s.role === 'write' ? '집필 중' : '+' + fmt(deskRate(o.i)); }
+    else { face = '🪑'; cap = '빈 책상'; rt = '＋ 뽑기'; }
+    const delay = `animation-delay:-${(o.i * 0.13) % 0.5}s`;
+    h += `<div class="${cls.join(' ')}" data-act="cell" data-c="${c}">${spb}${bub}${s ? `<span class="rolet">${s.role === 'write' ? '✍️' : '🧪'}${trait(s).ico}</span>` : ''}${s && s.doze ? '<span class="zzz">💤</span>' : ''}
+      <div class="who ${wcls}" style="${delay}">${face}</div><div class="tbl"><span>${ei}</span></div><div class="cap">${cap} <small class="muted">${d.sid === 'me' ? '' : s ? 'Lv' + s.lv : ''}</small></div><div class="rt2">${rt}</div></div>`;
+  }
+  return h;
+}
+function buildLab() {
+  $('view').innerHTML = `<div id="labLine"></div><div id="labPlace"></div>
+    <div class="roomWrap"><div class="wall"><i></i><i></i><i></i><i></i><span class="tro" id="tro"></span></div><div id="room"></div></div>
+    <div id="labSpots"></div>
+    <div id="tapWrap"><button id="tapBtn">${THEME.tapIcon} ${THEME.tap}<small id="tapVal"></small></button></div>
+    <div id="labHint"></div><div id="labTodo"></div><div id="labWork"></div>
+    <div class="proto">시제품 v0.6 · 그림 대신 이모지 · 광고는 가짜(2초)</div>`;
+  $('tapBtn').addEventListener('pointerdown', e => { e.preventDefault(); tap(e); });
+}
+function viewLab() {
+  const td = todos(), bn = bottleneck(), L = layout();
+  const deskSig = S.desks.map((d, i) => { const s = deskStu(d); return [d.sid, d.lv, s ? s.role + (s.doze ? 'z' : '') + s.lv + (isAway(s) ? 'a' : '') + (stuBuff(s) !== 1 ? 'b' : '') : '', S.idea && S.idea.desk === i ? 'i' : ''].join(':'); }).join(',') + S.couples.length;
+  const sig = ['lab', S.stage, S.lver, deskSig, papersSig(), ordersSig(), td.map(t => t.txt).join(), bn, serverOn() && S.D >= serverCost(), S.server, hint(), placeMode, selKey,
+    adsOn(), S.buffs.some(b => b.night), !!bestUpgrade(paperReserve()), S.cleared, Object.keys(S.found).length, S.trophies.length].join('|');
+  if (sig === lastSig) return; lastSig = sig;
+  if (!$('tapBtn')) buildLab();
+  $('labLine').innerHTML = serverOn()
+    ? `<div class="line"><span>🧪 생산 <b data-v="raw"></b>/초</span><span>→</span><button data-act="serverSheet" class="${bn ? 'warnb' : ''}">${THEME.server[1]} 처리 <span data-v="cap"></span>/초${bn ? ' ⚠' : ''}</button><span>→ 📊</span></div>` : '';
+  // 배치 막대
+  if (placeMode) {
+    const sel = selKey ? objRef(selKey) : null;
+    let info = '물건이나 책상을 누른 뒤, 옮길 칸을 누르세요. 칸이 차 있으면 서로 자리를 바꿔요.';
+    if (sel) info = selKey[0] === 'd' ? `🪑 책상 선택됨 — 옮길 칸을 누르세요` : `${THEME.items[sel.t][1]} <b>${THEME.items[sel.t][0]}</b> — ${THEME.items[sel.t][2]}${sel.cell < 0 ? '<br>보관함에서 꺼냈어요. 놓을 칸을 누르세요' : ''}`;
+    const stored = S.items.map((it, k) => [it, k]).filter(([it]) => it.cell < 0);
+    $('labPlace').innerHTML = `<div class="placebar"><div>${info}</div>
+      ${stored.length ? `<div class="tray">📦 ${stored.map(([it, k]) => `<button data-act="pick" data-k="i${k}" class="${selKey === 'i' + k ? 'on' : ''}">${THEME.items[it.t][1]}</button>`).join('')}</div>` : ''}
+      <div class="row" style="margin-top:8px">${sel && selKey[0] === 'i' && sel.cell >= 0 ? '<button class="btn ghost sm" data-act="store">📦 보관</button>' : ''}<button class="btn ghost sm" data-act="recommend">✨ 추천 배치</button><button class="btn ghost sm" data-act="tab" data-tab="fac">＋ 물건 사기</button><div class="grow"></div><button class="btn sm" data-act="placeOff">✅ 끝</button></div></div>`;
+  } else $('labPlace').innerHTML = '';
+  $('room').innerHTML = roomHTML();
+  $('tro').textContent = S.trophies.slice(-10).join('');
+  // 스팟 줄
+  const on = Object.keys(L.spots);
+  $('labSpots').innerHTML = serverOn() ? `<div class="spots">${placeMode ? '' : '<button class="btn ghost sm" data-act="placeOn">🛠 배치하기</button>'}<div class="grow">${on.length ? on.map(id => THEME.spots[id][0] + ' ' + THEME.spots[id][1]).join(' · ') : '<span class="muted">스팟 없음 — 물건 3개를 가까이 두면 생겨요</span>'}</div><button class="btn ghost sm" data-act="book">📖 ${Object.keys(S.found).length}/${SPOTS.length}</button></div>` : '';
+  const h = hint(); $('labHint').innerHTML = h ? `<div class="hint">${h}</div>` : '';
+  const canAuto = !!bestUpgrade(paperReserve());
+  $('labTodo').innerHTML = placeMode ? '' : `<div class="card todo"><h3>추천 할 일</h3>${td.map(t => `<div class="item"><div class="ico" style="font-size:22px">${t.ico}</div><div class="grow">${t.txt}</div>
+      <button class="btn sm" data-act="${t.act}" ${t.id ? `data-id="${t.id}"` : ''} ${t.v !== undefined ? `data-v="${t.v}"` : ''} ${t.tab ? `data-tab="${t.tab}"` : ''} ${t.i !== undefined ? `data-i="${t.i}"` : ''}>${t.btn}${t.sub ? `<small>${t.sub}</small>` : ''}</button></div>`).join('') || '<div class="muted">지금은 기다리는 중… 💡나 💤가 뜨면 눌러 주세요</div>'}
+    <button class="btn ghost full" data-act="auto" ${canAuto ? '' : 'disabled'}>🛒 추천대로 한 번에 업그레이드</button>
+    ${adsOn() && S.stage >= 1 ? (S.buffs.some(b => b.night) ? `<div class="muted" style="margin-top:8px">⚡ 밤샘 모드 중 (생산 ×2) · <b data-end="${S.buffs.find(b => b.night).until}"></b></div>` : `<button class="btn ad full" data-act="night">📺 밤샘 모드: 30분 동안 생산 ×2 <small>오늘 ${adLeft('night')}회 남음</small></button>`) : ''}</div>`;
+  const req = reqText();
+  $('labWork').innerHTML = placeMode ? '' : `<div class="card"><h3>진행 중</h3>${S.papers.map(paperCard).join('')}${S.orders.map(orderCard).join('')}${!S.papers.length && !S.orders.length ? '<div class="muted">진행 중인 논문·과제가 없어요</div>' : ''}
+    <div class="muted" style="margin-top:10px">${req.txt}</div><div class="bar"><i style="width:${Math.min(100, req.cur / req.need * 100)}%"></i></div></div>`;
+}
+function viewPeople() {
+  const sig = ['people', S.stage, S.students.map(s => s.id + s.role + s.lv + (s.doze ? 'z' : '')).join(), S.cands.map(c => c.id + (S.W >= hireCost(c.grade) ? 'y' : 'n')).join(), emptyDesk(), S.grads, adsOn()].join('|');
+  if (sig === lastSig) return; lastSig = sig;
+  if (!serverOn()) { $('view').innerHTML = `<div class="card"><h3>🔒 사람</h3><div class="muted">석사과정이 되면 교수님이 신입생을 받기 시작해요.<br>지금은 워크숍 논문 1편을 내 보세요!</div></div>`; return; }
+  const list = S.students.map(s => { const t = trait(s), i = S.desks.findIndex(d => d.sid === s.id);
+    return `<div class="item"><div class="ico">${s.face}</div><div class="grow"><b>${s.name}</b> <span class="muted">Lv.${s.lv} · ${s.role === 'write' ? '✍️집필' : '🧪실험'} · ${t.ico}${t.name}${s.doze ? ' · 💤' : ''}</span><br>
+      <span class="muted">코딩 ${s.code} · 글쓰기 ${s.write} · 멘탈 ${s.mental}${canGrad(s) ? ' · <b style="color:var(--ok)">졸업 가능!</b>' : ''}</span></div><button class="btn ghost sm" data-act="desk" data-i="${i}">관리</button></div>`; }).join('');
+  const ed = emptyDesk();
+  const cands = S.cands.map((c, i) => { const t = trait(c), cost = hireCost(c.grade);
+    return `<div class="item"><div class="ico">${c.face}</div><div class="grow"><b>${c.name}</b> <span class="tag">${THEME.grades[c.grade]}</span><br>
+      <span class="muted">${t.ico} ${t.name} — ${t.desc}<br>코딩 ${c.code} · 글쓰기 ${c.write} · 멘탈 ${c.mental}</span></div>
+      <button class="btn sm" data-act="hire" data-i="${i}" ${S.W >= cost && ed >= 0 ? '' : 'disabled'}>뽑기<small>💰 ${fmt(cost)}</small></button></div>`; }).join('');
+  $('view').innerHTML = `<div class="card"><h3>우리 연구실 <span class="muted">${S.students.length}명${S.grads ? ` · 졸업생 ${S.grads}명` : ''}</span></h3>${list || '<div class="muted">아직 학생이 없어요</div>'}</div>
+    <div class="card"><h3>신입생 지원자</h3>${ed < 0 ? '<div class="hint">빈 책상이 없어요. 시설 탭이나 연구실에서 책상을 늘려요.</div>' : ''}${cands}
+      <div class="muted" style="margin-top:8px">새 지원자까지 <span data-evend="${S.candAt}"></span></div>
+      ${adsOn() ? `<button class="btn ad full" data-act="candAd">📺 광고 보고 다른 지원자 보기 <small>오늘 ${adLeft('cands')}회 남음</small></button>` : ''}</div>
+    <div class="card muted">🧪 실험: 데이터를 만들어요 · ✍️ 집필(박사부터): 논문 ‘글’ 점수를 만들어요(데이터는 안 만듦).<br>멘탈이 높으면 덜 졸아요. 창가·화분 옆에 앉히면 멘탈이 올라요.<br>박사 졸업 단계부터 Lv.${BAL.student.gradLv}에 졸업시킬 수 있어요.</div>`;
+}
+function viewWork() {
+  const pl = S.plan;
+  if (BAL.venues[pl.v].unlock > S.stage) pl.v = 0;
+  if (!S.unlockT.includes(pl.t)) pl.t = S.unlockT[0];
+  if (!S.unlockM.includes(pl.m)) pl.m = S.unlockM[0];
+  const sig = ['work', S.stage, papersSig(), ordersSig(), S.published.join(), adsOn(), S.lver, JSON.stringify(pl), Math.floor(S.rp), S.unlockT.length, S.unlockM.length, S.hof.length, S.D >= planCost(pl.v, pl.dir), Object.keys(S.combos).length, Math.floor(S.t / 86400), S.feeOn].join('|');
+  if (sig === lastSig) return; lastSig = sig;
+  const req = reqText(), canSlot = S.papers.length < slots(), tr = trendTopic(), seqH = pl.seq >= 0 ? S.hof[pl.seq] : null;
+  const k = pl.t + '-' + pl.m, known = S.combos[k], cost = planCost(pl.v, pl.dir), est = estimate(pl);
+  const chip = (act, key, val, on, label) => `<button data-act="${act}" data-${key}="${val}" class="${on ? 'on' : ''}">${label}</button>`;
+  const plan = `<div class="card"><h3>✍️ 새 논문 기획 <span class="muted">🔬 연구 포인트 ${Math.floor(S.rp)} · 조합 도감 ${Object.keys(S.combos).length}/${THEME.topics.length * THEME.methods.length}</span></h3>
+    ${seqH ? `<div class="hint">🏛️ 후속 연구: 「${seqH.title}」 — 점수 ${Math.round(P.sequelCarry * 100)}%를 안고 시작 <button class="btn ghost sm" data-act="seqOff">취소</button></div>` : ''}
+    <div class="lbl">투고처</div><div class="chips">${BAL.venues.map((v, i) => v.unlock <= S.stage ? chip('pv', 'v', i, pl.v === i, THEME.venues[i] + (i === targetVenue() && S.stage < 5 ? ' ⭐' : '')) : '').join('')}</div>
+    ${seqH ? '' : `<div class="lbl">주제 <small>(🔥 = 요즘 핫함: 참신성 +20%, 인용 ×1.5)</small></div><div class="chips">${S.unlockT.map(t => chip('pt', 't', t, pl.t === t, THEME.topics[t] + (t === tr ? ' 🔥' : '') + (topicLv(t) > 1 ? ` Lv${topicLv(t)}` : ''))).join('')}</div>
+    <div class="lbl">방법</div><div class="chips">${S.unlockM.map(m => chip('pm', 'm', m, pl.m === m, THEME.methods[m] + (S.combos[pl.t + '-' + m] === 3 ? ' ★' : ''))).join('')}</div>`}
+    <div class="lbl">방향</div><div class="seg">${[['normal', '보통'], ['careful', '꼼꼼히'], ['fast', '빨리'], ['research', '연구 위주']].map(([d, n]) => `<button data-act="pd" data-d="${d}" class="${pl.dir === d ? 'on' : ''}">${n}</button>`).join('')}</div>
+    <div class="muted">${({normal: '무난하게', careful: '시간·비용 ↑, 점수 ×1.35, 오류 ↓', fast: '시간 ×0.6, 점수 ×0.75, 오류 ↑', research: '비용 ×1.5, 연구 포인트 ×2.5'})[pl.dir]}</div>
+    <div class="reward left">${seqH ? '' : `궁합: ${known === undefined ? '❔ 처음 써 보는 조합 (쓰면 알게 돼요)' : `<span class="stars">${compatStars(known)}</span> <b>${compatName(known)}</b>`}<br>`}
+      ${(S.comboUse[k] || 0) ? `<small class="muted">이 조합 ${S.comboUse[k]}번 썼어요 → 참신성 −${Math.round(Math.min(0.5, P.repeatPen * S.comboUse[k]) * 100)}%</small><br>` : ''}예상 심사: <b>${estLabel(est)}</b> <small class="muted">(약 ${est}/40)</small><br>📊 ${fmt(cost)}${S.feeOn ? ' (🎫 −40%)' : ''} · 집필 ${fmtT(writeTime(pl.v, pl.dir))} · 심사 ${fmtT(BAL.venues[pl.v].review)}</div>
+    <div class="row"><button class="btn ghost" data-act="autoPlan">⚡ 추천대로</button><button class="btn grow" data-act="startPaper" ${canSlot && S.D >= cost ? '' : 'disabled'}>${canSlot ? (S.D >= cost ? '✍️ 쓰기 시작' : `데이터 ${fmt(cost - S.D)} 더 필요`) : `논문 자리 없음 (${S.papers.length}/${slots()})`}</button></div></div>`;
+  const lockT = THEME.topics.map((n, t) => t).filter(t => !S.unlockT.includes(t)), lockM = THEME.methods.map((n, m) => m).filter(m => !S.unlockM.includes(m));
+  const research = (lockT.length || lockM.length) ? `<div class="card"><h3>🔬 연구하기 <span class="muted">오류 잡기·심사·게재·과제로 포인트가 쌓여요</span></h3>
+    ${lockT.slice(0, 2).map(t => `<div class="item"><div class="ico">📚</div><div class="grow"><b>새 주제: ${THEME.topics[t]}</b></div><button class="btn sm" data-act="unT" data-t="${t}" ${S.rp >= P.unlockT[t] ? '' : 'disabled'}>연구<small>🔬 ${P.unlockT[t]}</small></button></div>`).join('')}
+    ${lockM.slice(0, 2).map(m => `<div class="item"><div class="ico">🧰</div><div class="grow"><b>새 방법: ${THEME.methods[m]}</b></div><button class="btn sm" data-act="unM" data-m="${m}" ${S.rp >= P.unlockM[m] ? '' : 'disabled'}>연구<small>🔬 ${P.unlockM[m]}</small></button></div>`).join('')}</div>` : '';
+  const hof = S.hof.length ? `<div class="card"><h3>🏛️ 명예의 전당 <span class="muted">리비전 없이 32점 이상</span></h3>${S.hof.map((h, i) => `<div class="item"><div class="ico">🏛️</div><div class="grow"><b>「${h.title}」</b><br><span class="muted">${THEME.venues[h.v]} · ${h.total}점</span></div>${h.sequeled ? '<span class="muted">후속 완료</span>' : `<button class="btn ghost sm" data-act="sequel" data-i="${i}">후속 연구</button>`}</div>`).join('')}</div>` : '';
+  $('view').innerHTML = (serverOn() ? `<div class="card"><h3>과제 의뢰 <span class="muted">마감 안에 데이터를 납품하면 연구비</span></h3>${S.orders.map(orderCard).join('') || '<div class="muted">새 의뢰를 기다리는 중… (몇 분마다 와요)</div>'}</div>` : '') +
+    `<div class="card"><h3>논문 진행 중 <span class="muted">(${S.papers.length}/${slots()}편)</span></h3>${S.papers.map(paperCard).join('') || '<div class="muted">진행 중인 논문이 없어요</div>'}
+    <div class="muted" style="margin-top:10px">${req.txt}</div><div class="bar"><i style="width:${Math.min(100, req.cur / req.need * 100)}%"></i></div></div>` + plan + research + hof +
+    `<div class="card muted">심사: 리뷰어 3명 + 편집위원이 10점씩(40점 만점). 26점↑ 게재 · 22~25 마이너 · 16~21 메이저 · 15↓ 리젝 · 한 번에 32↑ 명예의 전당.<br>🧪 실험은 실험 학생 코딩, ✍️ 글은 집필 학생 글쓰기, 💡 참신성은 모두의 레벨과 💡 아이디어에서 나와요.</div>`;
+}
+function viewFac() {
+  const aff = [...Object.keys(BAL.items).map(t => S.W >= itemCost(t) ? 1 : 0), ...BAL.upgrades.map(u => S.W >= u.cost ? 1 : 0), S.W >= repCost(), S.W >= deskCost(), S.D >= serverCost()].join('');
+  const sig = ['fac', S.stage, S.items.length, JSON.stringify(S.upg), S.rep, S.server, S.desks.length, aff, JSON.stringify(S.inv)].join('|');
+  if (sig === lastSig) return; lastSig = sig;
+  const row = (ico, name, desc, cost, unit, owned, act, id, lockSt, label = '구매') => `<div class="item ${owned || lockSt ? 'locked' : ''}"><div class="ico">${ico}</div><div class="grow"><b>${name}</b><br><span class="muted">${lockSt ? `🔒 ${THEME.stages[lockSt].name}에 열려요` : desc}</span></div>
+    ${owned ? `<span class="muted">${owned === true ? '보유 ✓' : owned}</span>` : lockSt ? '' : `<button class="btn" data-act="${act}" data-id="${id}" ${(unit === '📊' ? S.D : S.W) >= cost ? '' : 'disabled'}>${label}<small>${unit} ${fmt(cost)}</small></button>`}</div>`;
+  const items = Object.keys(BAL.items).map(t => { const [n, ico, desc] = THEME.items[t], c = itemCost(t), own = itemOwned(t), max = BAL.items[t].cost.length;
+    return row(ico, `${n} <span class="muted">${own}/${max}</span>`, desc, c, '💰', isFinite(c) ? false : '최대', 'buyItem', t, BAL.items[t].stage > S.stage ? BAL.items[t].stage : 0, '사서 놓기'); }).join('');
+  $('view').innerHTML = `<div class="card"><h3>연구 시설</h3>
+      ${serverOn() ? row(THEME.server[1], `${THEME.server[0]} Lv.${S.server}`, `처리 ${fmt(serverCap())}/초 → 다음 ${fmt(serverCap(S.server + 1))}/초 (랙 ${itemsPlaced('rack')}대)${bottleneck() ? ' · <b style="color:var(--warn)">지금 병목!</b>' : ''}`, serverCost(), '📊', false, 'server', 0, 0, '올리기')
+        : row(THEME.server[1], THEME.server[0], '', 0, '📊', false, '', 0, 1)}
+      ${S.desks.length < deskMax() ? row('🪑', `책상 늘리기 (${S.desks.length}/${deskMax()})`, '새 학생을 앉힐 자리', deskCost(), '💰', false, 'addDesk', 0, serverOn() ? 0 : 1) : `<div class="item locked"><div class="ico">🪑</div><div class="grow"><b>책상 ${S.desks.length}/${deskMax()}</b><br><span class="muted">${S.stage < 5 ? `${THEME.stages[S.stage + 1].name}에 더 늘릴 수 있어요` : '최대'}</span></div></div>`}</div>
+    <div class="card"><h3>연구실 물건 <span class="muted">사면 좋은 자리에 놓여요 · 연구실에서 옮길 수 있어요</span></h3>${items}</div>
+    ${Object.keys(S.inv).some(k => S.inv[k]) ? `<div class="card"><h3>🎒 가방 <span class="muted">떠돌이 상인에게 산 물건</span></h3>${Object.keys(THEME.shop).filter(k => S.inv[k]).map(k => `<div class="item"><div class="ico">${THEME.shop[k][1]}</div><div class="grow"><b>${THEME.shop[k][0]} ×${S.inv[k]}</b><br><span class="muted">${THEME.shop[k][2]}</span></div><button class="btn sm" data-act="useItem" data-id="${k}">쓰기</button></div>`).join('')}</div>` : ''}
+    <div class="card"><h3>업그레이드</h3>${BAL.upgrades.map(u => row(THEME.upgrades[u.id][1], THEME.upgrades[u.id][0], THEME.upgrades[u.id][2], u.cost, '💰', !!S.upg[u.id], 'upg', u.id, u.stage > S.stage ? u.stage : 0)).join('')}
+      ${row(THEME.repeat[1], `${THEME.repeat[0]} Lv.${S.rep}`, THEME.repeat[2], repCost(), '💰', false, 'rep', 0, 0)}</div>`;
+}
+function viewMore() {
+  const sig = ['more', S.sound, S.stage].join('|');
+  if (sig === lastSig) return; lastSig = sig;
+  $('view').innerHTML = `<div class="card"><h3>${THEME.stages[S.stage].face} ${S.name} · ${THEME.stages[S.stage].name}</h3><div class="muted" id="stats"></div></div>
+    <div class="card"><h3>설정</h3><div class="row"><div class="grow">사운드</div><button class="btn ghost" data-act="sound">${S.sound ? '켜짐 🔊' : '꺼짐 🔇'}</button></div></div>
+    <div class="card"><h3>기타</h3><button class="btn ghost full" data-act="resetAsk" style="color:var(--warn)">처음부터 다시 시작</button></div>
+    <div class="card muted">대학원생 키우기 v1.0 · ${THEME.label}<br>이 게임 속 연구실·인물·논문은 모두 지어낸 것이에요.</div>`;
+}
+function updateNumbers() {
+  const pr = procRate();
+  $('hFace').textContent = THEME.stages[S.stage].face; $('hName').textContent = S.name || '이름 없음'; $('hStage').textContent = THEME.stages[S.stage].name;
+  $('hD').textContent = fmt(S.D); $('hDr').textContent = `+${fmt(pr)}/초`;
+  $('hW').textContent = fmt(S.W); $('hWr').textContent = `+${fmt(wPerSec())}/초`;
+  $('hC').textContent = fmt(S.cit); $('hCr').textContent = `+${fmt(citPerSec() * 3600)}/시간`;
+  if ($('tapVal')) $('tapVal').textContent = `한 번에 +${fmt(tapValue())}` + (S.buffs.some(b => b.k === 'tap') ? ' 🔥' : '');
+  document.querySelectorAll('[data-v="raw"]').forEach(el => el.textContent = fmt(rawRate()));
+  document.querySelectorAll('[data-v="cap"]').forEach(el => el.textContent = fmt(serverCap()));
+  document.querySelectorAll('[data-end]').forEach(el => el.textContent = fmtT(+el.dataset.end - S.t));
+  document.querySelectorAll('[data-pa]').forEach(el => { const p = S.papers.find(x => x.id === +el.dataset.pid); if (p) el.style.width = Math.min(100, p[el.dataset.pa] / P.req[p.v][PA[el.dataset.pa][1]] * 100) + '%'; });
+  document.querySelectorAll('[data-pt]').forEach(el => { const p = S.papers.find(x => x.id === +el.dataset.pid); if (p) el.textContent = `${fmt(p[el.dataset.pt])}/${fmt(P.req[p.v][PA[el.dataset.pt][1]])}`; });
+  document.querySelectorAll('[data-bug]').forEach(el => { const p = S.papers.find(x => x.id === +el.dataset.pid); if (p) el.textContent = Math.ceil(p.bugs); });
+  document.querySelectorAll('[data-evend]').forEach(el => el.textContent = fmtT(+el.dataset.evend - S.evT));
+  document.querySelectorAll('[data-e]').forEach(el => { const s = +el.dataset.s, e = +el.dataset.e; el.style.width = Math.min(100, (S.t - s) / (e - s) * 100) + '%'; });
+  $('dotWork').hidden = !(S.papers.some(p => ['result', 'revwait', 'rejected'].includes(p.state)) || S.orders.some(o => S.D >= o.need));
+  $('dotPeople').hidden = !(emptyDesk() >= 0 && S.cands.some(c => S.W >= hireCost(c.grade))) && !S.students.some(canGrad);
+  if ($('stats')) $('stats').innerHTML = `총 탭 ${fmt(S.taps)}회 · 플레이 ${fmtT(S.playSecs)} · 접속 ${S.sessions}회<br>게재: ${THEME.venues.map((v, i) => `${v} ${S.published[i]}`).join(' · ')}<br>과제 납품 ${S.delivered}건 · 졸업생 ${S.grads}명 · 🏛️ ${S.hof.length} · 🏆 ${S.trophies.length} · 🔬 ${Math.floor(S.rp)} · 스팟 도감 ${Object.keys(S.found).length}/${SPOTS.length} · 생산 배율 ×${fmt(globalMult(false))}`;
+}
+function render() {
+  if (tab === 'lab') viewLab(); else if (tab === 'people') viewPeople(); else if (tab === 'work') viewWork(); else if (tab === 'fac') viewFac(); else viewMore();
+  updateNumbers();
+}
+// 논문 쓰는 동안 책상 위로 점수가 튀어나오는 연출 (카이로소프트식)
+setInterval(() => {
+  if (tab !== 'lab' || document.hidden || placeMode) return;
+  const room = $('room'); if (!room) return;
+  const wp = S.papers.find(p => ['writing', 'revising', 'debug'].includes(p.state)); if (!wp) return;
+  const cand = S.desks.map((d, i) => i).filter(i => { const d = S.desks[i], s = deskStu(d); return d.cell >= 0 && (d.sid === 'me' || (s && !s.doze)); });
+  if (!cand.length) return;
+  const i = rnd(cand), d = S.desks[i], s = deskStu(d), el = room.querySelector(`[data-c="${d.cell}"]`); if (!el) return;
+  const m = paperMult(wp), tr = teamRates();
+  let txt, col;
+  if (wp.state === 'debug') { if (s && s.role !== 'exp') return; txt = '🔧 오류 잡음'; col = '#1aa36b'; }
+  else if (Math.random() < 0.12) { txt = '🐛 오류!'; col = '#f04452'; }
+  else if (Math.random() < 0.3) { txt = `+${Math.max(1, Math.round(tr.N * m * 0.5 / cand.length * 3))} 참신`; col = '#ff9f43'; }
+  else if (s && s.role === 'write') { txt = `+${Math.max(1, Math.round((s.write + layout().fx[i].write) * P.rateW * m * 0.5))} 글`; col = '#8b5cf6'; }
+  else { txt = `+${Math.max(1, Math.round((s ? s.code : 3) * P.rateE * m * 0.5))} 실험`; col = '#3182f6'; }
+  const b = document.createElement('div'); b.className = 'pb'; b.textContent = txt; b.style.color = col;
+  b.style.left = (el.offsetLeft + el.offsetWidth / 2) + 'px'; b.style.top = (el.offsetTop + 6) + 'px';
+  room.appendChild(b); setTimeout(() => b.remove(), 1100);
+}, 450);
+// 데이터가 책상에서 서버 랙으로 날아가는 연출
+setInterval(() => {
+  if (tab !== 'lab' || document.hidden || placeMode || !serverOn()) return;
+  const room = $('room'); if (!room) return;
+  const L = layout(), work = S.desks.map((d, i) => i).filter(i => deskRate(i) > 0), racks = L.objs.filter(o => o.kind === 'item' && o.t === 'rack');
+  if (!work.length || !racks.length) return;
+  const from = room.querySelector(`[data-c="${S.desks[rnd(work)].cell}"]`), to = room.querySelector(`[data-c="${rnd(racks).cell}"]`);
+  if (!from || !to || from === to) return;
+  const p = document.createElement('div'); p.className = 'pt';
+  p.style.left = (from.offsetLeft + from.offsetWidth / 2 - 3) + 'px'; p.style.top = (from.offsetTop + from.offsetHeight * 0.45) + 'px';
+  room.appendChild(p);
+  requestAnimationFrame(() => requestAnimationFrame(() => { p.style.transform = `translate(${to.offsetLeft - from.offsetLeft}px,${to.offsetTop - from.offsetTop}px) scale(.6)`; p.style.opacity = '.15'; }));
+  setTimeout(() => p.remove(), 900);
+}, 380);
+
+// ---------------------------------------------------------------- 입력
+function cellTap(c) {
+  const o = layout().map[c];
+  if (!placeMode) {
+    if (!o) return;
+    if (o.kind === 'item') { itemSheet(o.i); return; }
+    const s = deskStu(S.desks[o.i]);
+    if (s && s.doze) wake(s.id); else if (!S.desks[o.i].sid) setTab('people'); else deskSheet(o.i);
+    return;
+  }
+  if (!selKey) { if (o) selKey = o.key; return; }
+  if (o && o.key === selKey) { selKey = null; return; }
+  const sel = objRef(selKey), old = sel.cell;
+  if (o) {
+    if (old < 0 && o.kind === 'desk') { toast('보관함 물건은 책상과 바꿀 수 없어요. 빈칸에 놓아요'); return; }
+    objRef(o.key).cell = old;
+  }
+  sel.cell = c; selKey = null; S.usedPlace = 1; finalizeLayout(); click();
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  const a = b.dataset.act, id = +b.dataset.id, sid = +b.dataset.sid;
+  switch (a) {
+    case 'close': closeModal(); break;
+    case 'cell': cellTap(+b.dataset.c); break;
+    case 'placeOn': if (modalOpen) closeModal(); if (tab !== 'lab') setTab('lab'); placeMode = true; selKey = null; break;
+    case 'placeOff': placeMode = false; selKey = null; break;
+    case 'pick': selKey = b.dataset.k; break;
+    case 'store': if (selKey && selKey[0] === 'i') { objRef(selKey).cell = -1; selKey = null; finalizeLayout(); } break;
+    case 'recommend': recommendLayout(); selKey = null; S.usedPlace = 1; toast('✨ 추천 배치 완료'); break;
+    case 'book': spotBook(); break;
+    case 'desk': deskSheet(+b.dataset.i); break;
+    case 'eq': upEquip(+b.dataset.i, +b.dataset.n); deskSheet(+b.dataset.i); break;
+    case 'role': setRole(sid, b.dataset.r); deskSheet(S.desks.findIndex(d => d.sid === sid)); break;
+    case 'train': train(sid); deskSheet(S.desks.findIndex(d => d.sid === sid)); break;
+    case 'grad': graduate(sid); break;
+    case 'idea': takeIdea(); break;
+    case 'hire': hire(+b.dataset.i); break;
+    case 'candAd': watchAd('cands', () => { newCands(); lastSig = ''; toast('새 지원자가 왔어요'); }); break;
+    case 'addDesk': addDesk(); break;
+    case 'buyItem': buyItem(b.dataset.id); break;
+    case 'server': upServer(); break;
+    case 'serverSheet': setTab('fac'); break;
+    case 'upg': { const u = BAL.upgrades.find(x => x.id === b.dataset.id); if (u && !S.upg[u.id] && S.W >= u.cost) { S.W -= u.cost; S.upg[u.id] = 1; click(); toast(`${THEME.upgrades[u.id][1]} ${THEME.upgrades[u.id][0]}!`); } break; }
+    case 'rep': if (S.W >= repCost()) { S.W -= repCost(); S.rep++; click(); } break;
+    case 'auto': autoUpgrade(); break;
+    case 'deliver': deliver(id); break;
+    case 'open': openResult(id); break;
+    case 'fast': fastReview(id); break;
+    case 'startRev': startRev(id); break;
+    case 'resub': resubmit(id, +b.dataset.low); break;
+    case 'giveup': giveup(id); break;
+    case 'skipDebug': skipDebug(id); break;
+    case 'pv': S.plan.v = +b.dataset.v; break;
+    case 'pt': S.plan.t = +b.dataset.t; break;
+    case 'pm': S.plan.m = +b.dataset.m; break;
+    case 'pd': S.plan.dir = b.dataset.d; break;
+    case 'seqOff': S.plan.seq = -1; break;
+    case 'sequel': S.plan.seq = +b.dataset.i; if (tab !== 'work') setTab('work'); break;
+    case 'startPaper': if (startPaper(S.plan)) save(); break;
+    case 'autoPlan': { const a = autoPlan(); if (startPaper(a)) { S.plan = Object.assign(S.plan, a); save(); } else toast('데이터가 모자라거나 논문 자리가 없어요'); break; }
+    case 'unT': unlockTopic(+b.dataset.t); break;
+    case 'unM': unlockMethod(+b.dataset.m); break;
+    case 'buyShop': buyShop(b.dataset.id); merchantSheet(); break;
+    case 'useItem': useItem(b.dataset.id); break;
+    case 'night': if (!S.buffs.some(x => x.night)) watchAd('night', () => { S.buffs.push({k: 'gen', m: 2, until: S.t + BAL.nightSecs, night: 1}); toast('⚡ 밤샘 모드! 30분 동안 생산 ×2'); }); break;
+    case 'tab': if (modalOpen) closeModal(); placeMode = false; setTab(b.dataset.tab); break;
+    case 'offTake': takeOffline(1); break;
+    case 'offTake2': closeModal(); { const po = pendingOffline; pendingOffline = null; watchAd('offline', () => { if (po) { S.D += po.dGain * 2; S.W += po.wGain * 2; } toast('2배로 받았어요!'); }, () => { if (po) { S.D += po.dGain; S.W += po.wGain; } }); } break;
+    case 'evChoice': { const c = curEvent.choices[+b.dataset.i]; eventReward(c.eff, c.msg); break; }
+    case 'mash': mashCount++; click(); b.textContent = `${curEvent.mashLabel} (${mashCount}/${curEvent.mash}) — 연타!`; if (mashCount >= curEvent.mash) eventReward(curEvent.win, curEvent.winMsg); break;
+    case 'evLose': if (curEvent.lose) applyEff(curEvent.lose); sheet(`<div class="big">${curEvent.icon}</div><p>${curEvent.loseMsg}</p><button class="btn" data-act="close">확인</button>`); break;
+    case 'evTake': takeEvent(1); break;
+    case 'ev2': { const msg = ev2.choices[+b.dataset.i].fn(); ev2Result(msg); break; }
+    case 'mash2': mashCount++; click(); b.textContent = `${ev2.mash.label} (${mashCount}/${ev2.mash.n}) — 연타!`; if (mashCount >= ev2.mash.n) ev2Result(ev2.mash.win()); break;
+    case 'ev2lose': ev2Result(ev2.mash.lose()); break;
+    case 'season': closeModal(); seasonCheck(b.dataset.id); break;
+    case 'evPreview': sheet(`<h2>🎲 이벤트 미리 보기</h2><p class="muted">시제품 테스트용 (조건이 맞아야 떠요)</p>
+      <div class="lbl">학생·외부</div><div class="chips">${EV2.map(e => `<button data-act="testEvent" data-id="${e.id}">${EVN[e.id] || e.id}</button>`).join('')}</div>
+      <div class="lbl">논문 쓰는 중</div><div class="chips"><button data-act="testPaperEv">집필 이벤트</button></div>
+      <div class="lbl">달력·시즌</div><div class="chips">${SEASONS.map(se => `<button data-act="season" data-id="${se.id}">${se.icon} ${se.title}</button>`).join('')}</div>
+      <button class="btn ghost" data-act="close">닫기</button>`); break;
+    case 'testEvent': { closeModal(); const e = EV2.find(x => x.id === b.dataset.id); const c = e && e.cond(); if (c) showEv2(e.make(c)); else toast('지금은 조건이 안 맞아요'); break; }
+    case 'testPaperEv': { closeModal(); const p = S.papers.find(p => p.state === 'writing'); if (p) paperEvent2(p); else toast('쓰고 있는 논문이 없어요'); break; }
+    case 'evTake2': { const amt = pendingEvent; pendingEvent = null; closeModal(); watchAd('event', () => { S.D += (amt.D || 0) * 2; S.W += (amt.W || 0) * 2; toast('2배로 받았어요!'); }, () => { S.D += amt.D || 0; S.W += amt.W || 0; }); break; }
+    case 'share': { const st = +b.dataset.st; const txt = `🎓 ${S.name}이(가) ${THEME.stages[st].name}이 되었어요! — 대학원생 키우기`; try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (err) {} toast('공유 문구를 복사했어요 (실제 앱은 토스 공유)'); break; }
+    case 'sound': S.sound = !S.sound; if (S.sound) soundResume(); click(); break;
+    case 'exitYes': save(true); $('exitBox').classList.add('hidden'); if (PF.close) PF.close(); break;
+    case 'exitNo': $('exitBox').classList.add('hidden'); break;
+    case 'resetAsk': sheet(`<div class="big">⚠️</div><h2>처음부터 다시 할까요?</h2><p>모든 진행이 지워져요.</p><button class="btn" data-act="reset" style="background:var(--warn)">다시 시작</button><button class="btn ghost" data-act="close">취소</button>`); break;
+    case 'reset': try { localStorage.removeItem(SKEY); } catch (err) {} PF.remove(SKEY).catch(() => {}); lastSavedStr = ''; S = newState(); LC = {ver: -1}; S.sessions = 1; closeModal(); askName(); setTab('lab'); break;
+    case 'start': S.name = ($('nameIn').value || '').trim().slice(0, 8) || '김연구'; closeModal(); save(); break;
+  }
+  if (a !== 'mash') lastSig = '';
+  render();
+});
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { placeMode = false; setTab(b.dataset.tab); } });
+function setTab(t) { tab = t; lastSig = ''; document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x.dataset.tab === t)); $('view').innerHTML = ''; render(); $('view').scrollTop = 0; }
+document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !modalBusy() && tab === 'lab' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); tap(); } });
+function askName() {
+  sheet(`<div style="font-size:15px;font-weight:800;color:var(--blue);letter-spacing:1px;margin-bottom:28px">🎓 대학원생 키우기</div><div class="big">🙂</div><h2>오늘부터 연구실 학부연구생!</h2><p>교수님: “이름이 뭐였더라?”</p><input id="nameIn" maxlength="8" placeholder="김연구"><button class="btn" data-act="start">연구실 들어가기</button>`);
+  $('modal').classList.add('title');
+  setTimeout(() => $('nameIn') && $('nameIn').focus(), 50);
+}
+
+// ---------------------------------------------------------------- 시작·루프
+let lastFrame = performance.now(), saveAt = 0;
+function frame() {
+  const now = performance.now(); let dt = (now - lastFrame) / 1000; lastFrame = now;
+  if (document.hidden) return;
+  if (dt > 1) dt = 1;
+  if (adPlaying) dt = 0;
+  // 들어오자마자 뜬 '다녀오셨어요' 창: 광고가 늦게 준비되면 '2배 받기' 버튼을 붙여 다시 그림
+  if (pendingOffline && modalOpen && pendingOffline.dGain > 0 && adsOn() && adLeft('offline') > 0 && !document.querySelector('#sheet [data-act=offTake2]') && document.querySelector('#sheet [data-act=offTake]')) offlineSheet(pendingOffline);
+  step(dt, dt);
+  render();
+  if (now - saveAt > 5000) { save(); saveAt = now; }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { save(true); soundPause(); return; }
+  soundResume();
+  const secs = Math.max(0, (Date.now() - S.lastReal) / 1000); lastFrame = performance.now();
+  if (secs >= 60) { S.sessions++; offline(secs); } else if (secs > 1) step(secs);
+  dailyCheck();
+});
+window.addEventListener('pagehide', () => save(true));
+function applyInsets(i) { if (!i) return; const r = document.documentElement.style; r.setProperty('--sat', (i.top || 0) + 'px'); r.setProperty('--sab', (i.bottom || 0) + 'px'); }
+(async function init() {
+  const within = (p, ms) => Promise.race([Promise.resolve().then(() => p), new Promise((_, no) => setTimeout(() => no(new Error('timeout')), ms))]);
+  let info = {userKey: ''};
+  try { info = (await within(PF.init(), 5000)) || info; } catch (e) {}
+  SKEY = KEY + (info.userKey ? '_' + String(info.userKey).slice(0, 32) : '');
+  if (PF.insets) try { applyInsets(PF.insets.get()); PF.insets.subscribe(applyInsets); } catch (e) {}
+  if (PF.onBack) try { PF.onBack(() => { const x = $('exitBox'); if (x.classList.contains('hidden')) x.classList.remove('hidden'); else x.classList.add('hidden'); }); } catch (e) {}
+  let raw = null;
+  if (PF.name !== 'web') { try { raw = await within(PF.load(SKEY), 8000); } catch (e) { bridgeOK = false; } }   // 못 읽었으면 토스 저장소에 덮어쓰지 않음
+  if (!raw) try { raw = localStorage.getItem(SKEY); } catch (e) {}
+  const saved = parseSave(raw);
+  lastSavedStr = raw || '';
+  if (saved) { S = saved; bump(); const secs = Math.max(0, (Date.now() - S.lastReal) / 1000); if (secs >= 60) { S.sessions++; offline(secs); } else step(secs); dailyCheck(); }
+  else { S.sessions = 1; askName(); }
+  render(); lastFrame = performance.now(); setInterval(frame, 100);
+})();
+</script>
+<script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>
+</body>
+</html>
